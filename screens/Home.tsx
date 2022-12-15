@@ -1,7 +1,7 @@
 
 //Importaciones
-import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, TextInput, ImageBackground, TouchableOpacity, ScrollView, Image, Button } from 'react-native'
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, ImageBackground, TouchableOpacity, ScrollView, Image, Button } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Menu, Divider, Provider } from 'react-native-paper';
 import { BarCodeScanner } from 'expo-barcode-scanner';
