@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput, ImageBackground, TouchableOpacity, ScrollView, Image, Button } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Menu, Divider, Provider } from 'react-native-paper';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import SalidasScreen from './Salidas';
+import DevolucionScreen from './Devolucion';
+
 
 
 
@@ -17,7 +19,19 @@ export default function Home({ navigation , route })
     const [visible, setVisible] = React.useState(false);
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
-    const [data, setData] = useState([{}])
+    const [data, setData] = useState([{}]);
+    // const Drawer = createDrawerNavigator();
+
+    // ////componentes/////
+
+    // function MyDrawer() {
+    //     return (
+    //       <Drawer.Navigator>
+    //         <Drawer.Screen name="Devolucion" component={DevolucionScreen} />
+    //         <Drawer.Screen name="Salidas" component={SalidasScreen} />
+    //       </Drawer.Navigator>
+    //     );
+    //   }
 
 
     /////Estilos//////
@@ -157,9 +171,7 @@ export default function Home({ navigation , route })
             backgroundColor: 'tomato'
         },
         btn_devolucion: {
-            top: 290,
-            width: 250,
-            height: 80,
+            top: 290,    
             alignItems: "center",
             justifyContent: "center",
             backgroundColor: "orange",
@@ -173,9 +185,7 @@ export default function Home({ navigation , route })
             color: "white"
         },
         btn_salidas: {
-            top: 350,
-            width: 250,
-            height: 80,
+            top: 350,     
             alignItems: "center",
             justifyContent: "center",
             backgroundColor: "orange",
@@ -214,101 +224,34 @@ export default function Home({ navigation , route })
 
     }
 
-
-    //////LECTOR CODE BAR ///////////////
-
-    const [hasPermission, setHasPermission] = useState(null);
-    const [scanned, setScanned] = useState(false);
-    const [text, setText] = useState('NO ESCANEADO')
-    const askForCameraPermission = () =>
-    {
-        (async () =>
-        {
-            const { status } = await BarCodeScanner.requestPermissionsAsync();
-            setHasPermission(status === 'granted');
-        })()
-    }
-
-    // Request Camera Permission
-    useEffect(() =>
-    {
-        askForCameraPermission();
-    }, []);
-
-    // What happens when we scan the bar code
-    const handleBarCodeScanned = ({ type, data }) =>
-    {
-        setScanned(true);
-        setText(data)
-        console.log('Type: ' + type + '\nData: ' + data)
-    };
-
-    // Check permissions and return the screens
-    if (hasPermission === null)
-    {
-        return (
-            <View style={styles.containerBarCode}>
-                <Text>Requesting for camera permission</Text>
-            </View>)
-    }
-    if (hasPermission === false)
-    {
-        return (
-            <View style={styles.containerBarCode}>
-                <Text style={{ margin: 10 }}>No access to camera</Text>
-                <Button title={'Allow Camera'} onPress={() => askForCameraPermission()} />
-            </View>)
-    }
-
-
     return (
         <View style={styles.view}>
             <ImageBackground source={require('../Img/FONDO-2.png')} style={styles.fondo}>
 
                 <View>
                     <TouchableOpacity style={styles.btn_devolucion} onPress={() => navigation.navigate("Devolucion")}>
-                        <Text style={styles.text_devolucion}>
+                        {/* <Text style={styles.text_devolucion}>
                             DEVOLUCIÓN 
                             <FontAwesome5 name="angle-double-right" size={30} color={"white"} onPress={() => navigation.goBack()} />
-                        </Text>
+                        </Text> */}
+                          <Image
+                        style={{width:250,height:90}}
+                        source={require('../Img/BOTÓN-DEVOLUCIONES.png')}
+                        />
                     </TouchableOpacity>
                 </View>
-                <View >
-                    <TouchableOpacity style={styles.btn_salidas} onPress={() => navigation.navigate("Salidas")}>
-                        <Text style={styles.text_salidas}>
+                
+                <View  >
+                    <TouchableOpacity  onPress={() => navigation.navigate("Salidas")} style={styles.btn_salidas} >
+                        {/* <Text style={styles.text_salidas}>
                             SALIDAS 
                             <FontAwesome5 name="angle-double-right" size={30} color={"white"} onPress={() => navigation.goBack()} />
-                        </Text>
+                        </Text> */}
+                        <Image
+                        style={{width:250,height:90}}
+                        source={require('../Img/BOTÓN-SALIDAS.png')}
+                        />
                     </TouchableOpacity>
-                </View>
-
-                <View style={styles.containerBarCode}>
-                    <View style={styles.barcodebox}>
-                        <BarCodeScanner
-                            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                            type={'back'}
-                            focusable={true}
-                            style={{ height: 400, width: 450 }} />
-                    </View>
-                    <Text style={styles.maintext}>{text}</Text>
-                    <View>
-                        {scanned &&
-                            <TouchableOpacity onPress={() => setScanned(false)}
-                                style={{
-                                    width: 90,
-                                    height: 45,
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    backgroundColor: "tomato",
-                                    borderRadius: 18
-                                }} >
-                                <Text style={{
-                                    fontSize: 15,
-                                    fontWeight: 'bold',
-                                    color: "white"
-                                }}>Rescanear</Text>
-                            </TouchableOpacity>}
-                    </View>
                 </View>
             </ImageBackground>
         </View>

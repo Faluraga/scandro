@@ -42,9 +42,9 @@ export default function DevolucionScreen({ navigation, route })
             marginTop: "20%",
         },
 
-        textBalance: {
+        textDevoluciones: {
             width: "53%",
-            color: "#FBBA00",
+            color: "tomato",
             marginTop: "18%",
             fontSize: 30,
             fontWeight: "bold"
@@ -52,7 +52,7 @@ export default function DevolucionScreen({ navigation, route })
         containerBarCode: {
 
             flex: 1,
-            backgroundColor: 'red',
+            //backgroundColor: 'red',
             alignItems: 'center',
             justifyContent: 'center',
             width: 200,
@@ -121,7 +121,7 @@ export default function DevolucionScreen({ navigation, route })
             </View>)
     }
 
-    //Front de Balance
+   
     return (
         <View style={styles.view}>
             <ImageBackground source={require('../Img/IMAGEN-1.jpg')} style={styles.fondo}>
@@ -129,7 +129,7 @@ export default function DevolucionScreen({ navigation, route })
                     <TouchableOpacity style={styles.iconreturn}>
                         <FontAwesome5 name="angle-double-left" size={30} color={"#FBBA00"} onPress={() => navigation.goBack()} />
                     </TouchableOpacity>
-                    <Text style={styles.textBalance}>Devoluciones</Text>
+                    <Text style={styles.textDevoluciones}>Devoluciones</Text>
                 </View>
 
                 <View style={styles.barcodebox}>
@@ -182,8 +182,6 @@ export default function DevolucionScreen({ navigation, route })
                         </TouchableOpacity>
                     </View>
                 </View>
-
-
 
             </ImageBackground>
         </View>
