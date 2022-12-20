@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
 
     logo: {
         alignItems: "center",
-        left:24
+        left: 24
         //top: '-5%',
         //marginBottom: '-20%'
     },
@@ -79,7 +79,8 @@ const styles = StyleSheet.create({
 })
 
 //Funcion principal del login
-export default function LoginScreen({navigation,route}) {
+export default function LoginScreen({ navigation, route })
+{
 
     const [email, setEmail] = useState({});
     const [pass, setPass] = useState("");
@@ -87,59 +88,60 @@ export default function LoginScreen({navigation,route}) {
     const [data, setData] = useState({});
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://698b-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://4653-161-18-229-214.ngrok.io/api/login';
 
     // funcion para validar si el correo tiene un formtao correcto
-    // function validadorCorreo(correo) {
+    function validadorCorreo(email :any) {
 
-    //     const expReg = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-    //     const esValido = expReg.test(correo)
-    //     return esValido
+        const expReg = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+        const esValido = expReg.test(email)
+        return esValido
 
-    // }
+    }
 
     ////////Funcion de login ////////
-  async function login()
-  {
-
-    try
+    async function login()
     {
-      var response = await fetch(urlBaseDevelomentLogin, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
-      }).then(res => res.json())
 
-        .then(resData =>
-        { 
-           
-          if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.") {
-            
-              alert('La contraseña ó el correo electrónico incorrecta , intente nuevamente');
-          }
-          
+        try
+        {
+            var response = await fetch(urlBaseDevelomentLogin, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
+            }).then(res => res.json())
 
-          if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
-          {
+                .then(resData =>
+                {
 
-            console.log('Ingreso exitoso');
-            alert('Ingreso existoso')
-            
-             navigation.navigate("Home");
-       
+                    if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
+                    {
 
-          }
-        });
+                        alert('La contraseña ó el correo electrónico incorrecta , intente nuevamente');
+                    }
 
-    } catch (e)
-    {
-      console.log('ERROR :', e);
-      alert(e)
+
+                    if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
+                    {
+
+                        console.log('Ingreso exitoso');
+                        alert('Ingreso existoso')
+
+                        navigation.navigate("Home");
+
+
+                    }
+                });
+
+        } catch (e)
+        {
+            console.log('ERROR :', e);
+            alert(e)
+        }
     }
-  }
     //Front
     return <View style={styles.view}>
         <ImageBackground source={require('../Img/FONDO-3.png')} style={styles.fondo}>
@@ -155,11 +157,13 @@ export default function LoginScreen({navigation,route}) {
             </View> */}
 
             <View style={{ justifyContent: "center", alignItems: "center", width: "93%", marginTop: 20 }}>
-                <TextInput style={styles.textbox_input} placeholder="CORREO ELECTRONICO" onChangeText={(value) => setEmail(value)} />
-                <TextInput style={styles.textbox_input} placeholder="CONTRASEÑA" onChangeText={(value) => setPass(value)} secureTextEntry={true} textContentType="newPassword" />
+                <TextInput style={styles.textbox_input} placeholder="Ingresa Email ... " onChangeText={(value) => setEmail(value)} autoComplete ={'email'} autoFocus={true} editable={true} />
+            </View>
+            <View style={{ justifyContent: "center", alignItems: "center", width: "93%",marginTop: 20 }}>
+                <TextInput style={styles.textbox_input} placeholder="Ingresa Contraseña" onChangeText={(value) => setPass(value)} secureTextEntry={true}  autoComplete ={'password'} autoFocus editable={true}/>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", width: "93%" }}>
-                <TouchableOpacity style={styles.btn_login}  onPress={() => login()}>
+                <TouchableOpacity style={styles.btn_login} onPress={() => login()}>
                     <Text style={styles.text_login}>
                         INGRESAR
                     </Text>

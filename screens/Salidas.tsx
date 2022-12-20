@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
 
     textSalida:{
         width:"53%",
-        color:"#FBBA00",
+        color:"green",
         marginTop:"18%",
         fontSize: 30,
         fontWeight:"bold"
@@ -49,7 +49,7 @@ export default function SalidasScreen({navigation,route}) {
             <ImageBackground source={require('../Img/IMAGEN-1.jpg')} style={styles.fondo}>
                 <View style={styles.containerSalidas} >
                     <TouchableOpacity style={styles.iconreturn}>
-                        <FontAwesome5 name="angle-double-left" size={30} color={"#FBBA00"} onPress={()=> navigation.goBack()}  />
+                        <FontAwesome5 name="angle-double-left" size={30} color={"green"} onPress={()=> navigation.goBack()}  />
                     </TouchableOpacity>
                     <Text style={styles.textSalida}>Salidas</Text>
                 </View>

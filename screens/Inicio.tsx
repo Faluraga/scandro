@@ -1,6 +1,13 @@
 //Pantalla Inicio
 
 //Importaciones
+import {
+    stylesB,
+    stylesL,
+    stylesM,
+    stylesO,
+    stylesS,
+  } from "./../screens/appTheme/styles/styles";
 import React from 'react'
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 
@@ -53,10 +60,10 @@ export default function InicioScreen({ navigation })
 
    
     return (
-        <View style={styles.view}>
+        <View style={stylesM.view}>
             <ImageBackground
                 source={require('../Img/FONDO-1.png')}
-                style={styles.fondo}
+                style={stylesM.fondo}
             >
                 <View style={styles.logo}>
                     <Image style={styles.Imagenlogo} source={require('../Img/dropiWhite.png')} />
