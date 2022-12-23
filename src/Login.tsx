@@ -6,6 +6,9 @@ import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, I
 import axios, { AxiosResponse, formToJSON } from 'axios';
 import IconEye from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveToken } from './storage/storage';
+import * as SecureStore from 'expo-secure-store';
+
 
 
 
@@ -118,7 +121,7 @@ export default function LoginScreen({ navigation, route })
 
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://5ffb-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://e0e8-179-32-16-224.ngrok.io/api/login';
 
 
     const password = () =>
@@ -136,52 +139,46 @@ export default function LoginScreen({ navigation, route })
 
     }
 
-    ////////Funcion de login ////////
-    async function login()
+    ///Funcion de login 
+  async function login()
+  {
+
+    try
     {
+      var response = await fetch(urlBaseDevelomentLogin, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
+      }).then(res => res.json())
 
-        try
-        {
-            var response = await fetch(urlBaseDevelomentLogin, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
-            }).then(res => res.json())
+        .then(resData =>
+        { 
 
-                .then(resData =>
-                {
+          if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.") {
+            
+              alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
+          }
+          
 
-                    if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
-                    {
+          if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
+          {
+            const status = "login"
+            var DropiToken = resData.token;
+           
+            saveToken(DropiToken).then(navigation.navigate("Home"));
+            
+          }
+        });
 
-                        alert('La contraseña ó el correo electrónico incorrecta , intente nuevamente');
-                    }
-
-
-                    if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
-                    {
-                        //console.log(typeof(resData.token));
-                        var token = resData.token;
-                        var idUser = resData
-                        console.log(idUser.objects.object);
-                        
-                        AsyncStorage.setItem('token',JSON.stringify(token))
-                        //console.log('Ingreso exitoso');
-                        navigation.navigate("Home");
-                        
-
-                    }
-                });
-
-        } catch (e)
-        {
-            console.log('ERROR :', e);
-            alert(e)
-        }
+    } catch (e)
+    {
+      console.log('ERROR :', e);
+      alert(e)
     }
+  }
 
 
 

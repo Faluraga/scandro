@@ -9,6 +9,7 @@ import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from 'lottie-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { readToken } from './storage/storage';
 
 
 
@@ -47,11 +48,13 @@ export default function DevolucionScreen({ navigation, route })
         },
 
         textDevoluciones: {
-            width: "53%",
+            width: "55%",
             color: "tomato",
             fontSize: 30,
             fontWeight: "bold",
-            right: 20
+            right: 20,
+            textAlign:'center'
+            
         },
         containerBarCode: {
 
@@ -87,36 +90,45 @@ export default function DevolucionScreen({ navigation, route })
     const [value, setValue] = React.useState(0);
     const [token, setToken] = React.useState();
     
-    var urlBaseDevelomentProducts = 'https://5ffb-179-32-16-224.ngrok.io/api/products/index';
+    var urlBaseDevelomentOrders = 'https://5ffb-179-32-16-224.ngrok.io/api/orders/getmyorders';
     
     useEffect(()=>{
-       readToken();
+        tokenUser();
       
     })
 
-    async function readToken() {
-        const data :any = AsyncStorage.getItem('token');
-        data.then((value:any)=>{
-            setToken(data._z)
-            console.log(token);  
-        }).catch((error:any)=>{
-            console.log(error);  
-        })       
-    }
+ /// Metodo para leer el token del usuario logueado , desde el local-storage
+ async function tokenUser()
+ {
 
+   const data: any = readToken();
+
+   data.then((value: any) =>
+   {
+     setToken(value);
+    console.log('DEVOLUCIONES :',token);
+    
+   }).catch((error: any) =>
+   {
+     console.log(error);
+
+   });
+ }
+ 
+ 
       ///Funcion para listar ordenes de un usuario 
-  const getProducts = async () =>
+  const getOrders = async (params:any) =>
   {
     try
     {
-      var response = await fetch(urlBaseDevelomentProducts, {
+      var response = await fetch(urlBaseDevelomentOrders, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ "user_id": 2})
+        body: JSON.stringify({ "user_id": 2,'filter_by':'GUIA','value_filter_by':params})
       })
 
       const res = await response.json();
@@ -133,7 +145,7 @@ export default function DevolucionScreen({ navigation, route })
     ////Handle add products ////
     const handleAddProducts = () =>
     {
-        getProducts()
+        
         // setValue(value + 1);
         // setScanned(false)
         
@@ -160,9 +172,10 @@ export default function DevolucionScreen({ navigation, route })
     }, []);
 
     // What happens when we scan the bar code
-    const handleBarCodeScanned = ({ type, data }) =>
+    const handleBarCodeScanned = ({ type , data }) =>
     {
         setScanned(true);
+        getOrders(data)
         arrayProducts.push({ id: value, product: data })
         console.log('Type: ' + type + '\nData: ' + data)
     };

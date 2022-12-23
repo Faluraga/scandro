@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 
 
 
+
 async function savePassword(data: any)
 {
     try
@@ -31,9 +32,10 @@ async function saveToken(token: any)
 
     try
     {
-        const tokenDropi = await SecureStore.setItemAsync('Dropitoken', token);
-        
-        //await AsyncStorage.setItem('Dropitoken', token);
+       
+         const tokenDropi = await SecureStore.setItemAsync('Dropitoken', token);
+       
+        //const tokenDropi = await AsyncStorage.setItem('Dropitoken',token); 
         return tokenDropi;
     } catch (error)
     {

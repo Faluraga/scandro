@@ -7,7 +7,7 @@ import {
     stylesM,
     stylesO,
     stylesS,
-  } from "./../screens/appTheme/styles/styles";
+  } from "./../src/appTheme/styles/styles";
 import React from 'react'
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 

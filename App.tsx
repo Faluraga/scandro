@@ -3,12 +3,12 @@ import React, { useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import InicioScreen from "./screens/Inicio";
-import LoginScreen from "./screens/Login";
-import HomeScreen from "./screens/Home";
-import Devolucion from './screens/Devolucion';
-import DevolucionScreen from './screens/Devolucion';
-import SalidasScreen from './screens/Salidas';
+import InicioScreen from "./src/Inicio";
+import LoginScreen from "./src/Login";
+import HomeScreen from "./src/Home";
+import Devolucion from './src/Devolucion';
+import DevolucionScreen from './src/Devolucion';
+import SalidasScreen from './src/Salidas';
 
 
 
