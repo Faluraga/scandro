@@ -8,11 +8,13 @@ import { Divider } from 'react-native-paper';
 import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from 'lottie-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
 
-export default function DevolucionScreen({ navigation,route })
+
+export default function DevolucionScreen({ navigation, route })
 {
 
     const [visibleCodeBar, setVisibleCodeBar] = useState(false);
@@ -63,6 +65,7 @@ export default function DevolucionScreen({ navigation,route })
             fontSize: 18,
             color: 'tomato',
             margin: 20,
+            //top:10
         },
         barcodebox: {
             //display: visibleCodeBar ? 'none' : 'flex',
@@ -81,21 +84,59 @@ export default function DevolucionScreen({ navigation,route })
 
     /////Estados/////
     const [arrayProducts, setArrayProducts] = useState([])
+    const [value, setValue] = React.useState(0);
+    const [token, setToken] = React.useState();
+    
+    var urlBaseDevelomentProducts = 'https://5ffb-179-32-16-224.ngrok.io/api/products/index';
+    
+    useEffect(()=>{
+       readToken();
+      
+    })
 
-    console.log('esta', arrayProducts);
+    async function readToken() {
+        const data :any = AsyncStorage.getItem('token');
+        data.then((value:any)=>{
+            setToken(data._z)
+            console.log(token);  
+        }).catch((error:any)=>{
+            console.log(error);  
+        })       
+    }
 
+      ///Funcion para listar ordenes de un usuario 
+  const getProducts = async () =>
+  {
+    try
+    {
+      var response = await fetch(urlBaseDevelomentProducts, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ "user_id": 2})
+      })
+
+      const res = await response.json();
+
+      console.log('RESPUESTA', res);
+
+    } catch (e)
+    {
+      console.log('ERROR :', e);
+      alert(e)
+    }
+  }
 
     ////Handle add products ////
-
-    const [value, setValue] = React.useState(0);
-
-
     const handleAddProducts = () =>
     {
-
-        setValue(value + 1);
-        setScanned(false)
-        console.log(value);
+        getProducts()
+        // setValue(value + 1);
+        // setScanned(false)
+        
     }
 
     //////LECTOR CODE BAR ///////////////
@@ -165,7 +206,7 @@ export default function DevolucionScreen({ navigation,route })
                     </TouchableOpacity>
                     <Text style={styles.textDevoluciones}>Devoluciones</Text>
                     <Animatable.View animation="pulse"
-                        duration={2000}
+                        duration={1000}
                         iterationCount={"infinite"}>
 
                         <TouchableOpacity style={{
@@ -189,6 +230,8 @@ export default function DevolucionScreen({ navigation,route })
                         </TouchableOpacity>
                     </Animatable.View>
                 </View>
+
+                {/* //////Escaner de codigo de barras ////////// */}
                 {visibleCodeBar ?
 
                     <View>
@@ -211,7 +254,6 @@ export default function DevolucionScreen({ navigation,route })
                                         backgroundColor: 'transparent',
                                         position: "absolute"
                                     }}
-                                    // Find more Lottie files at https://lottiefiles.com/featured
                                     source={require('../assets/lottie/scan.json')}
                                 />
 
@@ -269,18 +311,13 @@ export default function DevolucionScreen({ navigation,route })
                     </View> :
                     <View>
                         <IconBar
-                        
+
                             name="barcode-scan"
                             size={150}
                             color="tomato"
                         />
                     </View>
                 }
-
-
-
-
-
 
                 {/* /////Cajón de productos//////// */}
                 <View style={{ paddingBottom: 2, borderWidth: 1, top: 10, width: 350, height: 420, borderRadius: 15, backgroundColor: 'white', marginBottom: 100 }}>
@@ -323,51 +360,14 @@ export default function DevolucionScreen({ navigation,route })
                                             borderRadius: 18,
 
                                         }}><Text style={{
-                                            fontSize: 13,
+                                            fontSize: 10,
                                             fontWeight: 'bold',
                                             color: "white"
-                                        }}>Enviar</Text></TouchableOpacity>
+                                        }}>Add stock</Text></TouchableOpacity>
                                     </View>
                                 </View>
                             );
                         }}></FlatList>
-                    {/* <View>
-                        {(arrayProducts.length < 1  ) ? (
-                           
-                            
-                            <Text >......</Text>
-                        
-
-                        ) :
-                            arrayProducts.map((item, index) => (
-                                <View style={{ flexDirection: "row", top: 10, margin: 3 }}>
-                                    <View style={{ left: 16 }}>
-                                        <Text style={{ fontSize: 15, color: 'black' }} key={item.id} >{index}</Text>
-                                    </View >
-                                    <View style={{ left: 110 }}>
-                                        <Text style={{ fontSize: 15, color: 'black' }} key={item.product}>{item.product}</Text>
-                                    </View>
-                                    <View style={{ left: 170, top: -8 }}>
-                                        <TouchableOpacity style={{
-                                            width: 70,
-                                            height: 35,
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            backgroundColor: "green",
-                                            borderRadius: 18,
-
-                                        }}><Text style={{
-                                            fontSize: 13,
-                                            fontWeight: 'bold',
-                                            color: "white"
-                                        }}>Enviar</Text></TouchableOpacity>
-                                    </View>
-                                </View>
-                            )
-
-                            )}
-                    </View> */}
-
                 </View>
             </ImageBackground>
         </View>
