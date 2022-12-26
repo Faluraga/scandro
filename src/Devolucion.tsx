@@ -10,6 +10,7 @@ import * as Animatable from "react-native-animatable";
 import LottieView from 'lottie-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { readToken } from './storage/storage';
+import modalAlert from '../modalAlert';
 
 
 
@@ -17,7 +18,16 @@ import { readToken } from './storage/storage';
 
 export default function DevolucionScreen({ navigation, route })
 {
-
+    /////Estados/////
+    const [arrayProducts, setArrayProducts] = React.useState([]);
+    const [zproducts, setProducts] = useState([]);
+    const [value, setValue] = React.useState(0);
+    const [token, setToken] = React.useState('');
+    const [idProduct, setIdProduct] = useState('');
+    const [nameProduct, setNameProduct] = useState();
+    const [guide,setGuide]= useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    var urlBaseDevelomentOrders = 'https://9a2e-179-32-16-224.ngrok.io/api/orders/getmyorders';
     const [visibleCodeBar, setVisibleCodeBar] = useState(false);
 
     //Estilos
@@ -53,8 +63,8 @@ export default function DevolucionScreen({ navigation, route })
             fontSize: 30,
             fontWeight: "bold",
             right: 20,
-            textAlign:'center'
-            
+            textAlign: 'center'
+
         },
         containerBarCode: {
 
@@ -65,10 +75,12 @@ export default function DevolucionScreen({ navigation, route })
             height: 50
         },
         maintext: {
-            fontSize: 18,
+            fontSize: 25,
             color: 'tomato',
             margin: 20,
-            //top:10
+            top:20,
+            
+
         },
         barcodebox: {
             //display: visibleCodeBar ? 'none' : 'flex',
@@ -85,73 +97,102 @@ export default function DevolucionScreen({ navigation, route })
 
     //////////////Estilos /////////////////////////
 
-    /////Estados/////
-    const [arrayProducts, setArrayProducts] = useState([])
-    const [value, setValue] = React.useState(0);
-    const [token, setToken] = React.useState();
-    
-    var urlBaseDevelomentOrders = 'https://5ffb-179-32-16-224.ngrok.io/api/orders/getmyorders';
-    
-    useEffect(()=>{
+    useEffect(() =>
+    {
         tokenUser();
-      
+
     })
 
- /// Metodo para leer el token del usuario logueado , desde el local-storage
- async function tokenUser()
- {
-
-   const data: any = readToken();
-
-   data.then((value: any) =>
-   {
-     setToken(value);
-    console.log('DEVOLUCIONES :',token);
-    
-   }).catch((error: any) =>
-   {
-     console.log(error);
-
-   });
- }
- 
- 
-      ///Funcion para listar ordenes de un usuario 
-  const getOrders = async (params:any) =>
-  {
-    try
+    const onRefresh = React.useCallback(() =>
     {
-      var response = await fetch(urlBaseDevelomentOrders, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ "user_id": 2,'filter_by':'GUIA','value_filter_by':params})
-      })
+        (async () =>
+        {
+            setRefreshing(true)
+            setTimeout(() => {
+                setRefreshing(false)
+            }, 800);
+        })();
+        return () => { setRefreshing(false) }
+    }, []);
 
-      const res = await response.json();
-
-      console.log('RESPUESTA', res);
-
-    } catch (e)
+    /// Metodo para leer el token del usuario logueado , desde el local-storage
+    async function tokenUser()
     {
-      console.log('ERROR :', e);
-      alert(e)
-    }
-  }
 
-    ////Handle add products ////
-    const handleAddProducts = () =>
-    {
-        
-        // setValue(value + 1);
-        // setScanned(false)
-        
+        const data: any = readToken();
+
+        data.then((value: any) =>
+        {
+            setToken(value);
+            //console.log('DEVOLUCIONES :',token);
+
+        }).catch((error: any) =>
+        {
+            console.log(error);
+
+        });
     }
 
-    //////LECTOR CODE BAR ///////////////
+
+    ////Funcion para listar ordenes de un usuario //////
+    const getOrders = async (params: any) =>
+    {
+        try
+        {
+            var response = await fetch(urlBaseDevelomentOrders, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "user_id": 2, 'filter_by': 'GUIA', 'value_filter_by': params })
+            })
+
+            var res = await response.json();
+            
+            if (res.isSuccess == true && res.status == 200)
+            {
+
+                var id_Product = res.objects[0].id;
+                var name_Product = res.objects[0].orderdetails[0].product.name;
+                var guide = res.objects[0].shipping_guide;
+                setGuide(current => current.concat(guide));
+                setArrayProducts(current => current.concat({id:id_Product,name:name_Product}));
+                //arrayProducts.push({ id: res.objects[0].id, name: res.objects[0].orderdetails[0].product.name });
+                //console.log(arrayProducts);
+
+            } else if (res == null || res == undefined || res == "")
+            {   
+                var info = 'GUIA NO ENCONTRADA';
+                var visible = true
+                return(
+                    modalAlert(info,visible)
+                )
+            }
+
+
+        } catch (e)
+        {
+            console.log('ERROR :', e);
+            alert('GUIA NO ENCONTRADA')
+        }
+    }
+
+    ////Boton añadir ////
+    const handleAddProducts = (params: any) =>
+    {
+        setScanned(false);
+        
+        //  //arrayProducts.push([id:params.id , product:params.user_name])
+        //  arrayProducts.forEach(item => {
+
+        //      products.push([ id:params.id , product: params.user_name] )
+        //  });
+        //console.log('Type: ' + type + '\nData: ' + data)
+    }
+
+    //////LECTOR CODE BAR  PERMISSION ///////////////
 
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
@@ -171,13 +212,29 @@ export default function DevolucionScreen({ navigation, route })
         askForCameraPermission();
     }, []);
 
-    // What happens when we scan the bar code
-    const handleBarCodeScanned = ({ type , data }) =>
-    {
-        setScanned(true);
-        getOrders(data)
-        arrayProducts.push({ id: value, product: data })
-        console.log('Type: ' + type + '\nData: ' + data)
+  
+
+    const handleBarCodeScanned = ({ type, data }) =>
+    {   
+        try {
+            var guia = data;
+            if (data != "" && guide.includes(data) != true)
+            {
+                setScanned(true);
+                getOrders(data).catch(console.error); 
+                   
+            }if(guide.includes(data) == true) {
+               
+                alert('GUIA YA ESCANEADA')
+                setScanned(true)
+            };
+           
+        } catch (error) {
+            console.log(error);
+            
+            
+        }
+
     };
 
     // Check permissions and return the screens
@@ -197,18 +254,16 @@ export default function DevolucionScreen({ navigation, route })
             </View>)
     }
 
-    ///////handle escaner code-bar /////
-    // const handleSetProduct = () =>
-    // {
-    //    // setArrayProducts([ ...arrayProducts,])
+    async function addStock(index:any,id:any) {
 
+        console.log('ID-PRODUCT =>',id);
+        console.log('INDEX =>',index);
+        arrayProducts.splice(index,1)
+        onRefresh();
+        console.log(arrayProducts);
+          
 
-    //     arrayProducts.push({ id:value ,product: text} )
-
-    // }
-    //console.log(arrayProducts);
-
-
+    }
 
     return (
         <View style={styles.viewTotal}>
@@ -270,11 +325,9 @@ export default function DevolucionScreen({ navigation, route })
                                     source={require('../assets/lottie/scan.json')}
                                 />
 
-
-
                             </Animatable.View>
                         </View>
-                        <View>
+                        <View >
                             <Text style={styles.maintext}>{text}</Text>
                         </View>
 
@@ -301,7 +354,7 @@ export default function DevolucionScreen({ navigation, route })
                             </View>
                             <View>
                                 <TouchableOpacity
-                                    onPress={() => handleAddProducts()}
+                                    onPress={() => handleAddProducts({})}
                                     style={{
                                         width: 90,
                                         height: 40,
@@ -319,6 +372,7 @@ export default function DevolucionScreen({ navigation, route })
                                         color: "white"
                                     }}>Añadir +</Text>
                                 </TouchableOpacity>
+                             
                             </View>
                         </View>
                     </View> :
@@ -349,19 +403,18 @@ export default function DevolucionScreen({ navigation, route })
 
                         data={arrayProducts}
                         scrollEnabled={true}
-                        //refreshing={refreshing}
-                        //onRefresh={onRefresh}
-                        //contentContainerStyle={{top:10,bottom:10}}
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
                         keyExtractor={({ id }, index) => id}
                         renderItem={({ item, index }) =>
                         {
                             return (
                                 <View style={{ flexDirection: "row", marginTop: 15, margin: 3, }}>
                                     <View style={{ width: "10%", alignItems: "center" }}>
-                                        <Text style={{ fontSize: 15, color: 'black' }} key={item.id} >{item.id}</Text>
+                                        <Text style={{ fontSize: 15, color: 'black' }} key={item.id} > {item.id}  </Text>
                                     </View >
                                     <View style={{ width: "60%", alignItems: "center" }}>
-                                        <Text style={{ fontSize: 15, color: 'black' }} key={item.product}>{item.product}</Text>
+                                        <Text style={{ fontSize: 15, color: 'black' }} >  {item.name} </Text>
                                     </View>
                                     <View style={{ width: "30%", alignItems: "center" }}>
                                         <TouchableOpacity style={{
@@ -371,8 +424,9 @@ export default function DevolucionScreen({ navigation, route })
                                             justifyContent: "center",
                                             backgroundColor: "green",
                                             borderRadius: 18,
-
-                                        }}><Text style={{
+                                        }}
+                                        onPress={()=>addStock(index,item.id)}
+                                        ><Text style={{
                                             fontSize: 10,
                                             fontWeight: 'bold',
                                             color: "white"

@@ -121,7 +121,7 @@ export default function LoginScreen({ navigation, route })
 
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://e0e8-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://9a2e-179-32-16-224.ngrok.io/api/login';
 
 
     const password = () =>
