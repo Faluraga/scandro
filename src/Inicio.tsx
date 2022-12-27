@@ -12,8 +12,10 @@ import React from 'react'
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 
 
+export default function Inicio({ navigation , route }:{ navigation:any , route:any })
+{
 
-//Estilos 
+///Estilos 
 const styles = StyleSheet.create({
     view: {
         width: '100%',
@@ -21,14 +23,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     fondo: {
-        flex: 2,
+        flex: 1,
         height: '100%',
         width: '100%',
         resizeMode: 'contain',
         alignItems: 'center',
     },
     btn1: {
-        marginTop: '170%',
+        marginTop: '135%',
 
     },
     txtbtn1: {
@@ -36,11 +38,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold'
     },
-    btn2: {
-        fontWeight: "bold",
-        color: '#FBBA00',
-        marginTop: '3%'
-    },
+  
     Imagenlogo: {
         resizeMode: 'contain',
         width: 180,
@@ -48,15 +46,10 @@ const styles = StyleSheet.create({
     },
     logo: {
         alignItems: "center",
-        top: '48%',
-        marginBottom: '-20%'
+        top: 360,
+        //marginBottom: '-20%'
     }
 })
-
-
-
-export default function InicioScreen({ navigation })
-{
 
    
     return (

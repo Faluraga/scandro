@@ -6,14 +6,14 @@ import { Text, TouchableOpacity, View } from 'react-native'
 
 
 
-const BOTONEXAMPLE = (params : any) =>{
+const BotonExample = (params : any) =>{
 
 
-const [luis,setLuis]= useState(0)    
+const [count,setCount]= useState(0)    
 
 
 async function suma() {
-    setLuis(luis+1)
+    setCount(count+1)
 }
 
 
@@ -22,10 +22,10 @@ async function suma() {
             <TouchableOpacity style={{backgroundColor:'red'}} onPress = {()=>suma()}>
                 <Text style ={{color:'white'}}>AGREGAR</Text>
             </TouchableOpacity>
-            <Text>{luis}</Text>
+            <Text>{count}</Text>
         </View>
 
       )
 };
  
-export default BOTONEXAMPLE;
+export default BotonExample;

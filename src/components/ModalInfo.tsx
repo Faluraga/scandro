@@ -1,22 +1,17 @@
 import React, { useState } from 'react'
-import { Modal, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
+import Modal from "react-native-modal";
 
-function modalAlert(params: any,value:boolean)
+const ModalInfo = (params: any, value: boolean)=>
 {
-    const [modalVisible, setModalVisible] = useState(value);
+    const [modalVisible, setModalVisible] = useState(false);
     var message = params;
-    var visible = value
+    setModalVisible(value)
     return (
         <View >
             <Modal
-                animationType='slide'
-                transparent={true}
-                visible={visible}
-                onRequestClose={() =>
-                {
-                    //Alert.alert("Modal has been closed.");
-                    setModalVisible(!modalVisible);
-                }}
+                animationIn='slideInUp'
+                isVisible={modalVisible}
             >
                 <View style={{
                     flex: 1,
@@ -59,4 +54,4 @@ function modalAlert(params: any,value:boolean)
     )
 }
 
-export default modalAlert
+export default ModalInfo

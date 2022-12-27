@@ -8,15 +8,14 @@ import { Divider } from 'react-native-paper';
 import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from 'lottie-react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { readToken } from './storage/storage';
-import modalAlert from '../modalAlert';
 
 
 
 
 
-export default function DevolucionScreen({ navigation, route })
+
+export default function DevolucionScreen({ navigation, route }:{ navigation:any, route:any })
 {
     /////Estados/////
     const [arrayProducts, setArrayProducts] = React.useState([]);
@@ -27,7 +26,7 @@ export default function DevolucionScreen({ navigation, route })
     const [nameProduct, setNameProduct] = useState();
     const [guide,setGuide]= useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    var urlBaseDevelomentOrders = 'https://9a2e-179-32-16-224.ngrok.io/api/orders/getmyorders';
+    var urlBaseDevelomentOrders = 'https://e171-179-32-16-224.ngrok.io/api/orders/getmyorders';
     const [visibleCodeBar, setVisibleCodeBar] = useState(false);
 
     //Estilos
@@ -162,20 +161,19 @@ export default function DevolucionScreen({ navigation, route })
                 //arrayProducts.push({ id: res.objects[0].id, name: res.objects[0].orderdetails[0].product.name });
                 //console.log(arrayProducts);
 
-            } else if (res == null || res == undefined || res == "")
-            {   
-                var info = 'GUIA NO ENCONTRADA';
-                var visible = true
-                return(
-                    modalAlert(info,visible)
-                )
-            }
+            } 
+            
 
 
         } catch (e)
         {
             console.log('ERROR :', e);
             alert('GUIA NO ENCONTRADA')
+            // var info = 'GUIA NO ENCONTRADA';
+            // var visible = true
+            // return(
+            //    <ModalInfo isVisible = {true} >{info}</ModalInfo>
+            // )
         }
     }
 
@@ -183,13 +181,6 @@ export default function DevolucionScreen({ navigation, route })
     const handleAddProducts = (params: any) =>
     {
         setScanned(false);
-        
-        //  //arrayProducts.push([id:params.id , product:params.user_name])
-        //  arrayProducts.forEach(item => {
-
-        //      products.push([ id:params.id , product: params.user_name] )
-        //  });
-        //console.log('Type: ' + type + '\nData: ' + data)
     }
 
     //////LECTOR CODE BAR  PERMISSION ///////////////

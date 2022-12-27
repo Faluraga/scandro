@@ -19,10 +19,11 @@ import * as SecureStore from 'expo-secure-store';
 
 
 //Funcion principal del login
-export default function LoginScreen({ navigation, route })
+export default function Login({ navigation, route }:{ navigation : any, route :any })
 {
 
-    //Estilos
+    ///////Estilos/////////
+    
     const styles = StyleSheet.create({
         view: {
             flex: 1,
@@ -121,7 +122,7 @@ export default function LoginScreen({ navigation, route })
 
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://9a2e-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://e171-179-32-16-224.ngrok.io/api/login';
 
 
     const password = () =>

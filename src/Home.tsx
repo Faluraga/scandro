@@ -6,32 +6,23 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { Menu, Divider, Provider } from 'react-native-paper';
 import SalidasScreen from './Salidas';
 import DevolucionScreen from './Devolucion';
+import Sidebar from './components/sidebar';
 
 
 
 
-export default function Home({ navigation , route })
+
+ const Home = ({ navigation, route }:{ navigation: any, route: any })=>
 {
 
 
     /////Estados/////   
     const [visibleCodeBar, setVisibleCodeBar] = useState(true);
-    const [visible, setVisible] = React.useState(false);
-    const openMenu = () => setVisible(true);
-    const closeMenu = () => setVisible(false);
+    const [visible, setVisible] = useState(false);
+    const openMenu = () => setVisible(!visible);
+    const closeMenu = () => setVisible(!visible);
     const [data, setData] = useState([{}]);
-    // const Drawer = createDrawerNavigator();
 
-    // ////componentes/////
-
-    // function MyDrawer() {
-    //     return (
-    //       <Drawer.Navigator>
-    //         <Drawer.Screen name="Devolucion" component={DevolucionScreen} />
-    //         <Drawer.Screen name="Salidas" component={SalidasScreen} />
-    //       </Drawer.Navigator>
-    //     );
-    //   }
 
 
     /////Estilos//////
@@ -79,16 +70,13 @@ export default function Home({ navigation , route })
         },
 
         menuNav: {
-            width: "25%",
-            alignItems: "center",
-            position: "relative",
-            zIndex: 3
-        },
-
-        contMoneda: {
             flex: 1,
-            marginTop: "-8%",
-            width: '100%'
+            width: "100%",
+            alignItems: 'flex-start',
+            right:30,
+            position: "absolute",
+            top:80
+
         },
 
         titulos: {
@@ -100,55 +88,6 @@ export default function Home({ navigation , route })
             marginTop: "-10%"
         },
 
-        txtNmoneda: {
-
-            width: '45%',
-            marginLeft: '2%',
-            fontWeight: 'bold',
-            fontSize: 18
-
-        },
-
-        txtPmoneda: {
-
-            width: '50%',
-            fontWeight: 'bold',
-            fontSize: 18
-        },
-
-        lista: {
-            flexDirection: 'row'
-        },
-
-        txtMoneda: {
-            width: "40%",
-            fontSize: 15,
-            margin: 10
-        },
-
-        txtPrecio: {
-            width: "28%",
-            fontSize: 15,
-            margin: 10
-        },
-
-        ContainerOperar: {
-            width: "33%",
-            fontSize: 15,
-            margin: 10,
-            color: "blue"
-        },
-
-        textOperar: {
-            color: "rgba(225, 177, 0, 1)",
-            fontSize: 15
-        },
-        preview: {
-            width: 300,
-            height: 300,
-            color: 'red'
-
-        },
         containerBarCode: {
             display: visibleCodeBar ? 'none' : 'flex',
             flex: 1,
@@ -171,7 +110,7 @@ export default function Home({ navigation , route })
             backgroundColor: 'tomato'
         },
         btn_devolucion: {
-            top: 290,    
+            top: 290,
             alignItems: "center",
             justifyContent: "center",
             backgroundColor: "orange",
@@ -185,7 +124,7 @@ export default function Home({ navigation , route })
             color: "white"
         },
         btn_salidas: {
-            top: 350,     
+            top: 350,
             alignItems: "center",
             justifyContent: "center",
             backgroundColor: "orange",
@@ -224,39 +163,58 @@ export default function Home({ navigation , route })
 
     }
 
+
     return (
         <View style={styles.view}>
-            <ImageBackground source={require('../Img/FONDO-2.png')} style={styles.fondo}>
-
+            <ImageBackground source={require('../Img/fondo_blanco.png')} style={styles.fondo}>
                 <View>
-                    <TouchableOpacity style={styles.btn_devolucion} onPress={() => navigation.navigate("Devolucion")}>
-                        {/* <Text style={styles.text_devolucion}>
+                    <View>
+                        <Provider>
+                            <View style={styles.menuNav}>
+                                <Menu
+                                    visible={visible}
+                                    contentStyle={{backgroundColor:'#ea6e2d'}}
+                                    onDismiss={closeMenu}
+                                    anchorPosition ={'bottom'}
+                                    anchor={
+                                        <TouchableOpacity onPress={openMenu}>
+                                            <FontAwesome5 name="bars" size={30} color="#ea6e2d"  FA5Style={{light:true}} />
+                                        </TouchableOpacity>}>
+                                    <Menu.Item onPress={() => navigation.navigate("Configuración")} title="Configuración" titleStyle={{color:'white'}} />
+                                    <Divider />
+                                    <Menu.Item onPress={() => logout()} title="Cerrar sesion" titleStyle={{color:'white'}} />
+                                </Menu>
+                            </View>
+                        
+
+                        <TouchableOpacity style={styles.btn_devolucion} onPress={() => navigation.navigate("Devolucion")}>
+                            {/* <Text style={styles.text_devolucion}>
                             DEVOLUCIÓN 
                             <FontAwesome5 name="angle-double-right" size={30} color={"white"} onPress={() => navigation.goBack()} />
                         </Text> */}
-                          <Image
-                        style={{width:250,height:90}}
-                        source={require('../Img/BOTÓN-DEVOLUCIONES.png')}
-                        />
-                    </TouchableOpacity>
-                </View>
-                
-                <View  >
-                    <TouchableOpacity  onPress={() => navigation.navigate("Salidas")} style={styles.btn_salidas} >
-                        {/* <Text style={styles.text_salidas}>
+                            <Image
+                                style={{ width: 250, height: 90 }}
+                                source={require('../Img/BOTÓN-DEVOLUCIONES.png')}
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => navigation.navigate("Salidas")} style={styles.btn_salidas} >
+                            {/* <Text style={styles.text_salidas}>
                             SALIDAS 
                             <FontAwesome5 name="angle-double-right" size={30} color={"white"} onPress={() => navigation.goBack()} />
                         </Text> */}
-                        <Image
-                        style={{width:250,height:90}}
-                        source={require('../Img/BOTÓN-SALIDAS.png')}
-                        />
-                    </TouchableOpacity>
+                            <Image
+                                style={{ width: 250, height: 90 }}
+                                source={require('../Img/BOTÓN-SALIDAS.png')}
+                            />
+                        </TouchableOpacity>
+                        </Provider>
+                    </View>
                 </View>
             </ImageBackground>
+            <Sidebar />
         </View>
     )
 }
 
-
-
+export default Home;
