@@ -7,6 +7,8 @@ import { Menu, Divider, Provider } from 'react-native-paper';
 import SalidasScreen from './Salidas';
 import DevolucionScreen from './Devolucion';
 import Sidebar from './components/sidebar';
+import { readToken,deleteToken,saveToken } from './storage/storage';
+
 
 
 
@@ -22,6 +24,10 @@ import Sidebar from './components/sidebar';
     const openMenu = () => setVisible(!visible);
     const closeMenu = () => setVisible(!visible);
     const [data, setData] = useState([{}]);
+    const [token, setToken] = React.useState('');
+    var urlBaseDevelomentOrders = 'https://bd43-179-32-16-224.ngrok.io/api/logout';
+
+
 
 
 
@@ -138,30 +144,88 @@ import Sidebar from './components/sidebar';
         },
     })
 
-
-
-    //UseEffect
-
-
-    //// Metodo para cerrar sesion y eliminar token desde api dropi
-    async function logout()
+    useEffect(() =>
     {
-        try
+        tokenUser();
+  
+    })
+
+
+   /// Metodo para leer el token del usuario logueado , desde el local-storage
+   async function tokenUser()
+   {
+       const data: any = readToken();
+
+       data.then((value: any) =>
+       {
+           setToken(value);
+           //console.log('TOKEN_HOME =>:',token);
+
+       }).catch((error: any) =>
+       {
+           console.log(error);
+
+       });
+   }
+
+
+    /// Metodo para cerrar sesion desde backend dropi 
+  async function logout()
+  {
+    try
+    {
+      var response = await fetch(urlBaseDevelomentOrders, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        //body: JSON.stringify({  })
+      }).then(res => res.json())
+
+        .then(resData =>
         {
+            
+          if (resData.isSuccess == true)
+          {
 
-            navigation.navigate("Inicio");
+            const logout = resData.message;
+            alert('Sesión cerrada exitosamente')
+            console.log(logout);
+          }
 
-            //await logOut();
 
-            return true;
-        } catch (error)
-        {
-            console.log(error);
-            alert(error)
-            return false
-        }
+        });
+
+    } catch (e)
+    {
+      console.log('ERROR :', e);
+      //alert(e)
+    }
+  }
+
+  async function sesionClose()
+  {
+
+    try
+    {
+     logout().then(()=>{
+        setTimeout(() => {
+            navigation.navigate('Login')
+        }, 800);
+     }).then(()=>{
+        saveToken(''); 
+     })
+    
+    } catch (error)
+    {
+      console.log(error);
 
     }
+
+  }
+ 
 
 
     return (
@@ -180,9 +244,9 @@ import Sidebar from './components/sidebar';
                                         <TouchableOpacity onPress={openMenu}>
                                             <FontAwesome5 name="bars" size={30} color="#ea6e2d"  FA5Style={{light:true}} />
                                         </TouchableOpacity>}>
-                                    <Menu.Item onPress={() => navigation.navigate("Configuración")} title="Configuración" titleStyle={{color:'white'}} />
+                                    <Menu.Item title="Configuración" titleStyle={{color:'white'}} />
                                     <Divider />
-                                    <Menu.Item onPress={() => logout()} title="Cerrar sesion" titleStyle={{color:'white'}} />
+                                    <Menu.Item onPress={() => sesionClose()} title="Cerrar sesion" titleStyle={{color:'white'}} />
                                 </Menu>
                             </View>
                         

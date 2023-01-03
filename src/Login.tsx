@@ -23,7 +23,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 {
 
     ///////Estilos/////////
-    
+
     const styles = StyleSheet.create({
         view: {
             flex: 1,
@@ -122,7 +122,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://e171-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://bd43-179-32-16-224.ngrok.io/api/login';
 
 
     const password = () =>
@@ -168,6 +168,8 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
           {
             const status = "login"
             var DropiToken = resData.token;
+            console.log('TOKEN =>',DropiToken);
+            
            
             saveToken(DropiToken).then(navigation.navigate("Home"));
             
@@ -197,7 +199,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
             <View style={{ width: '90%' }}>
 
                 <View style={styles.box_input}>
-                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su correo." onChangeText={(value) => setEmail(value)} autoComplete={'email'} autoFocus={true} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0"/>
+                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su correo." onChangeText={(value) => setEmail(value)} autoComplete={'email'}  editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0"/>
                 </View>
 
             </View>

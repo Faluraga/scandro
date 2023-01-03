@@ -77,11 +77,8 @@ async function readToken()
     const dropiToken = await SecureStore.getItemAsync('Dropitoken')
     //const dropiToken = await AsyncStorage.getItem('Dropitoken');
     //console.log('DropiToken : ', dropiToken);
-
     return dropiToken;
 }
-
-
 
 async function deleteToken(token: any)
 {
