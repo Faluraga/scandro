@@ -1,6 +1,6 @@
 
 //Importaciones
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, Image, Button, FlatList } from 'react-native'
 import { FontAwesome5 } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
@@ -9,6 +9,11 @@ import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from 'lottie-react-native';
 import { readToken } from './storage/storage';
+// expo add expo-file-system expo-sharing xlsx
+import * as XLSX from 'xlsx';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+
 
 
 
@@ -27,15 +32,16 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     const [nameProduct, setNameProduct] = useState();
     const [guide, setGuide] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    var urlBaseDevelomentOrders = 'https://bd43-179-32-16-224.ngrok.io/api/orders/getmyorders';
-    var urlBaseDevelomentProducts = 'https://bd43-179-32-16-224.ngrok.io/api/products';
+    var urlBaseDevelomentOrders = 'https://f6ec-179-32-16-224.ngrok.io/api/orders/getmyorders';
+    var urlBaseDevelomentProducts = 'https://f6ec-179-32-16-224.ngrok.io/api/products';
     const [visibleCodeBar, setVisibleCodeBar] = useState(false);
     const [visibleAnimation, setVisibleAnimation] = useState(true);
     const [changeStatusView, setChangeStatusView] = useState([]);
     const [stockUpdate, setStockUpdate] = useState(0);
     const [quantity, setQuantity] = useState(0);
     const [stockPrevious, setStockPrevious] = useState(0);
-    const [warehouse, setWarehouse] = useState(0)
+    const [idWarehouse, setIdWarehouse] = useState(0)
+    const [enableButtonExcel,setEnableButtonExcel]=useState(false)
 
 
 
@@ -69,20 +75,20 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
 
         textDevoluciones: {
             //backgroundColor:'tomato',
-            borderRadius:10,   
+            borderRadius: 10,
             width: "55%",
             color: "tomato",
             fontSize: 30,
             fontWeight: "bold",
             right: 20,
             textAlign: 'center'
-            
+
 
         },
         containerBarCode: {
 
             flex: 1,
-            alignSelf:'center',
+            alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center',
             width: 200,
@@ -162,29 +168,40 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
 
             if (res.isSuccess == true && res.status == 200)
             {
-                const id_order :number = parseInt(res.objects[0].id)
-                const id_user :number = parseInt(res.objects[0].user_id)
-                const id_product :number= parseInt(res.objects[0].orderdetails[0].product.id);
+                const id_order: number = parseInt(res.objects[0].id)
+                const id_user: number = parseInt(res.objects[0].user_id)
+                const id_product: number = parseInt(res.objects[0].orderdetails[0].product.id);
                 const name_product = res.objects[0].orderdetails[0].product.name;
                 const guide: any = res.objects[0].shipping_guide;
-                const stock_previous:any = parseInt(res.objects[0].orderdetails[0].product.stock);
-                const quantity:any = parseInt(res.objects[0].orderdetails[0].quantity);
-                const warehouse:number = parseInt(res.objects[0].warehouse_id);
-                const stock_update:number = parseInt(stock_previous + quantity);
+                const stock_previous: any = parseInt(res.objects[0].orderdetails[0].product.stock);
+                const quantity: any = parseInt(res.objects[0].orderdetails[0].quantity);
+                const id_warehouse: number = parseInt(res.objects[0].warehouse_id);
+                const name_warehouse: string = res.objects[0].warehouse.name
+                const stock_update: number = parseInt(stock_previous + quantity);
 
- 
+
+
                 //////LLenado de estados /////
                 setIdOrder(id_order);
                 setIdUser(id_user);
                 setIdProduct(id_product);
                 setQuantity(quantity);
-                setStockPrevious(stock_previous); 
+                setStockPrevious(stock_previous);
                 setStockUpdate(stock_update);
-                setWarehouse(warehouse);
+                setIdWarehouse(id_warehouse);
                 setGuide(current => current.concat(guide));
-                setArrayProducts(current => current.concat({ id_order: id_order,id_user:id_user,id_product:id_product,quantity:quantity,stock_previous:stock_previous,stock_update:stock_update,warehouse:warehouse, name: name_product, guide: guide }));
-          
-
+                setArrayProducts(current => current.concat({
+                    id_order: id_order,
+                    id_user: id_user,
+                    id_product: id_product,
+                    id_warehouse: id_warehouse,
+                    quantity: quantity,
+                    stock_previous: stock_previous,
+                    stock_update: stock_update,
+                    name_product: name_product,
+                    name_warehouse: name_warehouse,
+                    guide: guide
+                }));
             }
 
         } catch (e)
@@ -197,11 +214,11 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
 
 
     ////Funcion actualizar stock  //////
-    const updateStock = async (id_product:any,stock_update:any,warehouse:any) =>
+    const updateStock = async (id_product: any, stock_update: any, warehouse: any) =>
     {
         try
         {
-          
+
             var response = await fetch(`${urlBaseDevelomentProducts}/${id_product}`, {
                 method: 'PUT',
                 headers: {
@@ -225,7 +242,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
             if (res.isSuccess == true && res.status == 200)
             {
                 alert(res.message)
-                console.log('RESPUESTA=>',res);    
+                console.log('RESPUESTA=>', res);
             }
 
         } catch (e)
@@ -239,11 +256,11 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     /////Renderizado en primera instancia arreglo de productos//////
     useEffect(() =>
     {
-         setArrayProducts(arrayProducts);
-      
-        
+        setArrayProducts(arrayProducts);
+
+
         console.log('-------------------------------------');
-        console.log('Arreglo-Productos=>',arrayProducts);
+        console.log('Arreglo-Productos=>', arrayProducts);
         console.log('-------------------------------------');
     }, [arrayProducts]);
 
@@ -295,7 +312,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
             {
                 setScanned(true);
                 getOrders(data).catch(console.error);
-                
+
             } if (arrayProducts.map(e => e['guide']).includes(data) === true)
             {
                 alert('GUIA YA ESCANEADA');
@@ -330,23 +347,24 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     {
         return (
             <View style={styles.containerBarCode}>
-                <Text style={{ margin: 10 , fontSize:17 }}>Sin acceso a la camara</Text>
-                <Button title={'Permitir camara'} onPress={() => askForCameraPermission()}  />
+                <Text style={{ margin: 10, fontSize: 17 }}>Sin acceso a la camara</Text>
+                <Button title={'Permitir camara'} onPress={() => askForCameraPermission()} />
             </View>)
     }
 
     ///Añadir al stock///
-    async function addStock(index: any, id_product:any,stock_update:any,warehouse:any)
-    {   
- 
-        (async()=>{
+    async function addStock(index: any, id_product: any, stock_update: any, warehouse: any)
+    {
 
-           await updateStock(id_product,stock_update,warehouse).then(() =>
+        (async () =>
+        {
+            await updateStock(id_product, stock_update, warehouse).then(() =>
             {
                 setChangeStatusView(current => current.concat(index));
+                setEnableButtonExcel(true);
             })
         })();
-       
+
     }
 
     ///Eliminar producto de la lista ///
@@ -360,6 +378,48 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
         setScanned(false);
 
     }
+
+
+    //////Generate-download excel//////
+
+    const generateExcel = () =>
+    {
+
+        if (enableButtonExcel === true) {
+            
+            let wb = XLSX.utils.book_new();
+    
+            let items=arrayProducts.map((e:any)=>{
+    
+                return [e['guide'],e['id_order'],e['id_product'],e['id_user'],e['id_warehouse'],e['name_product'],e['name_warehouse'],e['quantity'],e['stock_previous'],e['stock_update']];
+            }); 
+    
+            console.log('items',items);
+        
+            let ws = XLSX.utils.aoa_to_sheet([["GUIA", "ID-ORDEN", "ID-PRODUCTO", "ID-USER", "ID-BODEGA", "NOMBRE-PRODUCTO", "NOMBRE-BODEGA", "CANTIDAD-DEVOLUCION", "STOCK-PREVIO", "STOCK-ACTUALIZADO"],...items]);
+    
+            XLSX.utils.book_append_sheet(wb, ws, "Devoluciones", true);
+    
+            const base64 = XLSX.write(wb, { type: "base64" });
+            console.log('archivo-base64=>',base64);
+            
+            const filename = FileSystem.documentDirectory + "Devoluciones.xlsx";
+            FileSystem.writeAsStringAsync(filename, base64, {
+                encoding: FileSystem.EncodingType.Base64
+            }).then(() =>
+            {
+                Sharing.shareAsync(filename);
+            }).catch(e=>{
+                console.log(e);
+                alert(e)  
+            });
+        }else{
+            alert('Debes añadir al menos una guia al stock para generar un documento excel')
+        }
+    };
+
+
+
 
 
 
@@ -429,7 +489,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                         <View style={{ flexDirection: 'row', alignItems: "center", alignSelf: 'center', marginTop: 40 }} >
                             <View style={{ width: '30%', alignItems: "center" }}>
 
-                                <TouchableOpacity onPress={() => setScanned(false)}
+                                <TouchableOpacity onPress={() => generateExcel()}
                                     style={{
                                         width: 50,
                                         height: 50,
@@ -524,7 +584,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                                         <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} key={item['id']} > {item['id_order']}  </Text>
                                     </View >
                                     <View style={{ width: "60%", alignItems: "center" }}>
-                                        <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} >  {item['name']} </Text>
+                                        <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} >  {item['name_product']} </Text>
                                     </View>
                                     <View style={{ width: "15%", alignItems: "center", display: changeStatusView.filter(e => e == index).length > 0 ? 'none' : 'flex' }}>
                                         <TouchableOpacity style={{
@@ -535,7 +595,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                                             //backgroundColor: "#52C254",
                                             borderRadius: 50,
                                         }}
-                                            onPress={() => addStock(index, item['id_product'],item['stock_update'],item['warehouse'])}
+                                            onPress={() => addStock(index, item['id_product'], item['stock_update'], item['id_warehouse'])}
                                         >
                                             <View >
                                                 <IconBar

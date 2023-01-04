@@ -25,7 +25,7 @@ import { readToken,deleteToken,saveToken } from './storage/storage';
     const closeMenu = () => setVisible(!visible);
     const [data, setData] = useState([{}]);
     const [token, setToken] = React.useState('');
-    var urlBaseDevelomentOrders = 'https://bd43-179-32-16-224.ngrok.io/api/logout';
+    var urlBaseDevelomentOrders = 'https://f6ec-179-32-16-224.ngrok.io/api/logout';
 
 
 
