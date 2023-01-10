@@ -32,17 +32,23 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     const [nameProduct, setNameProduct] = useState();
     const [guide, setGuide] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    var urlBaseDevelomentOrders = 'https://f6ec-179-32-16-224.ngrok.io/api/orders/getmyorders';
-    var urlBaseDevelomentProducts = 'https://f6ec-179-32-16-224.ngrok.io/api/products';
     const [visibleCodeBar, setVisibleCodeBar] = useState(false);
     const [visibleAnimation, setVisibleAnimation] = useState(true);
     const [changeStatusView, setChangeStatusView] = useState([]);
     const [stockUpdate, setStockUpdate] = useState(0);
     const [quantity, setQuantity] = useState(0);
     const [stockPrevious, setStockPrevious] = useState(0);
-    const [idWarehouse, setIdWarehouse] = useState(0)
-    const [enableButtonExcel,setEnableButtonExcel]=useState(false)
-
+    const [idWarehouse, setIdWarehouse] = useState(0);
+    const [enableButtonExcel, setEnableButtonExcel] = useState(false);
+    const [idDevolution, setIdDevolution] = useState();
+    const [idHistoryInventories, setIdHistoryInventories] = useState();
+    const [action, setAction] = useState(false);
+    let cosa1: any = 0
+    let cosa2: any = 0
+    var urlBaseDevelomentOrders = 'https://d271-179-32-16-224.ngrok.io/api/orders/getmyorders';
+    var urlBaseDevelomentProducts = 'https://d271-179-32-16-224.ngrok.io/api/products';
+    var urlBaseDevelomentDevolutions = 'https://d271-179-32-16-224.ngrok.io/api/devolution/create';
+    var urlBaseDevelomentHistoryDevolutions = 'https://d271-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution';
 
 
 
@@ -214,43 +220,155 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
 
 
     ////Funcion actualizar stock  //////
-    const updateStock = async (id_product: any, stock_update: any, warehouse: any) =>
+    const updateStock = async (id_product: any, stock_update: any, warehouse: any, quantity: any) =>
     {
         try
         {
-
-            var response = await fetch(`${urlBaseDevelomentProducts}/${id_product}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "active": true,
-                    "id": id_product,
-                    "add_stock_in_return": true,
-                    "stock": stock_update,
-                    "user_id": idUser,
-                    "warehouselected": warehouse,
-                    "type": "SIMPLE"
-                })
-            })
-
-            var res = await response.json();
-
-            if (res.isSuccess == true && res.status == 200)
+            (async () =>
             {
-                alert(res.message)
-                console.log('RESPUESTA=>', res);
-            }
+
+                var response = await fetch(`${urlBaseDevelomentProducts}/${id_product}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "active": true,
+                        "id": id_product,
+                        "add_stock_in_return": true,
+                        "stock": stock_update,
+                        "user_id": idUser,
+                        "warehouselected": warehouse,
+                        "type": "SIMPLE",
+                        "historyInventories": [{
+                            "concept": "Devoluciones - " + new Date().toLocaleDateString(),
+                            "type_movement": "ENTRADA",
+                            "quantity": quantity,
+                            "variation_id": null
+                        }]
+                    })
+                })
+
+                var res = await response.json();
+
+                if (res.isSuccess == true && res.status == 200)
+                {
+                    alert(res.message);
+                    var id_history_inventories = res.objects.id;
+                    console.log(idHistoryInventories);
+                    
+                    setIdHistoryInventories(id_history_inventories);
+
+                    if (action === false)
+                    {
+                        await devolution();
+                       
+                    } else if (action === true)
+                    {
+                        operationsDevoltions(id_history_inventories);
+                    }
+
+                }
+            })();
 
         } catch (e)
         {
-            console.log('ERROR :', e);
+            console.log('ERROR =>', e);
             alert('Error al actualizar');
         }
     }
+
+    useEffect(()=>{
+        historyDevolutions(idDevolution,idHistoryInventories);
+    },[action])
+
+    const devolution = async () =>
+    {
+
+        try
+        {
+            (async () =>
+            {
+                var devolucion = await fetch(urlBaseDevelomentDevolutions, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "user_id": idUser,
+                    })
+                })
+                var dev = await devolucion.json();
+
+                if (dev.isSuccess == true && dev.status == 200)
+                {
+                    console.log('REPUESTA-DEVOLUCION =>', dev);
+
+                    var id_devolution = dev.objects.id;
+                    setIdDevolution(id_devolution);
+                    setAction(true);
+
+                }
+            })();
+
+        } catch (e)
+        {
+            console.log('Error =>', e);
+            alert(e)
+        }
+
+    }
+
+
+
+    const historyDevolutions = async (id_devolution: any, id_hInventories: any) =>
+    {
+
+        try
+        {
+            (async () =>
+            {
+                var response = await fetch(urlBaseDevelomentHistoryDevolutions, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "id_devolutions": id_devolution,
+                        "id_history_inventories": id_hInventories
+                    })
+                })
+                var res = await response.json();
+                console.log('HISTORY-DEVOLUTIONS => ', res);
+            })();
+
+        } catch (e)
+        {
+            console.log('Error =>', e);
+            alert(e)
+        }
+
+    }
+
+ 
+
+    const operationsDevoltions = (idHInventory:any) =>
+    {
+
+        if (action === true)
+        {
+            historyDevolutions(idDevolution, idHInventory);
+        }
+
+    }
+
+
 
 
     /////Renderizado en primera instancia arreglo de productos//////
@@ -258,10 +376,6 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     {
         setArrayProducts(arrayProducts);
 
-
-        console.log('-------------------------------------');
-        console.log('Arreglo-Productos=>', arrayProducts);
-        console.log('-------------------------------------');
     }, [arrayProducts]);
 
     /////Lectura de token /////
@@ -353,12 +467,12 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     }
 
     ///Añadir al stock///
-    async function addStock(index: any, id_product: any, stock_update: any, warehouse: any)
+    async function addStock(index: any, id_product: any, stock_update: any, warehouse: any, quantity: any)
     {
 
         (async () =>
         {
-            await updateStock(id_product, stock_update, warehouse).then(() =>
+            await updateStock(id_product, stock_update, warehouse, quantity).then(() =>
             {
                 setChangeStatusView(current => current.concat(index));
                 setEnableButtonExcel(true);
@@ -385,35 +499,39 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     const generateExcel = () =>
     {
 
-        if (enableButtonExcel === true) {
-            
+        if (enableButtonExcel === true)
+        {
+
             let wb = XLSX.utils.book_new();
-    
-            let items=arrayProducts.map((e:any)=>{
-    
-                return [e['guide'],e['id_order'],e['id_product'],e['id_user'],e['id_warehouse'],e['name_product'],e['name_warehouse'],e['quantity'],e['stock_previous'],e['stock_update']];
-            }); 
-    
-            console.log('items',items);
-        
-            let ws = XLSX.utils.aoa_to_sheet([["GUIA", "ID-ORDEN", "ID-PRODUCTO", "ID-USER", "ID-BODEGA", "NOMBRE-PRODUCTO", "NOMBRE-BODEGA", "CANTIDAD-DEVOLUCION", "STOCK-PREVIO", "STOCK-ACTUALIZADO"],...items]);
-    
+
+            let items = arrayProducts.map((e: any) =>
+            {
+
+                return [e['guide'], e['id_order'], e['id_product'], e['id_user'], e['id_warehouse'], e['name_product'], e['name_warehouse'], e['quantity'], e['stock_previous'], e['stock_update']];
+            });
+
+            console.log('items', items);
+
+            let ws = XLSX.utils.aoa_to_sheet([["GUIA", "ID-ORDEN", "ID-PRODUCTO", "ID-USER", "ID-BODEGA", "NOMBRE-PRODUCTO", "NOMBRE-BODEGA", "CANTIDAD-DEVOLUCION", "STOCK-PREVIO", "STOCK-ACTUALIZADO"], ...items]);
+
             XLSX.utils.book_append_sheet(wb, ws, "Devoluciones", true);
-    
+
             const base64 = XLSX.write(wb, { type: "base64" });
-            console.log('archivo-base64=>',base64);
-            
+            console.log('archivo-base64=>', base64);
+
             const filename = FileSystem.documentDirectory + "Devoluciones.xlsx";
             FileSystem.writeAsStringAsync(filename, base64, {
                 encoding: FileSystem.EncodingType.Base64
             }).then(() =>
             {
                 Sharing.shareAsync(filename);
-            }).catch(e=>{
+            }).catch(e =>
+            {
                 console.log(e);
-                alert(e)  
+                alert(e)
             });
-        }else{
+        } else
+        {
             alert('Debes añadir al menos una guia al stock para generar un documento excel')
         }
     };
@@ -562,7 +680,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                             <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'tomato' }} >ID</Text>
                         </View >
                         <View style={{ width: "60%", alignItems: "center" }}>
-                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'tomato' }}>PRODUCTO</Text>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'tomato' }}>GUIA</Text>
                         </View>
                         <View style={{ width: "30%", alignItems: "center" }}>
                             <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'tomato' }}>ACCION</Text>
@@ -575,7 +693,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                         scrollEnabled={true}
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        keyExtractor={({ id }, index) => id}
+                        keyExtractor={({ id }) => id}
                         renderItem={({ item, index }) =>
                         {
                             return (
@@ -584,7 +702,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                                         <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} key={item['id']} > {item['id_order']}  </Text>
                                     </View >
                                     <View style={{ width: "60%", alignItems: "center" }}>
-                                        <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} >  {item['name_product']} </Text>
+                                        <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} >  {item['guide']} </Text>
                                     </View>
                                     <View style={{ width: "15%", alignItems: "center", display: changeStatusView.filter(e => e == index).length > 0 ? 'none' : 'flex' }}>
                                         <TouchableOpacity style={{
@@ -595,7 +713,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                                             //backgroundColor: "#52C254",
                                             borderRadius: 50,
                                         }}
-                                            onPress={() => addStock(index, item['id_product'], item['stock_update'], item['id_warehouse'])}
+                                            onPress={() => addStock(index, item['id_product'], item['stock_update'], item['id_warehouse'], item['quantity'])}
                                         >
                                             <View >
                                                 <IconBar
