@@ -32,11 +32,28 @@ async function saveToken(token: any)
 
     try
     {
-       
-         const tokenDropi = await SecureStore.setItemAsync('Dropitoken', token);
-       
+
+        const tokenDropi = await SecureStore.setItemAsync('Dropitoken', token);
+
         //const tokenDropi = await AsyncStorage.setItem('Dropitoken',token); 
+
+
         return tokenDropi;
+    } catch (error)
+    {
+        console.log(error);
+    }
+}
+
+async function saveIdUser(id: any)
+{
+
+    try
+    {
+
+        const idUser = await SecureStore.setItemAsync('idUser', JSON.stringify(id))
+
+        return idUser;
     } catch (error)
     {
         console.log(error);
@@ -48,9 +65,9 @@ async function readPassword()
 
     try
     {
-         const password = await SecureStore.getItemAsync('password');
+        const password = await SecureStore.getItemAsync('password');
 
-         return password;
+        return password;
     } catch (error)
     {
         console.log(error);
@@ -75,9 +92,28 @@ async function readNameUser()
 async function readToken()
 {
     const dropiToken = await SecureStore.getItemAsync('Dropitoken')
-    //const dropiToken = await AsyncStorage.getItem('Dropitoken');
-    //console.log('DropiToken : ', dropiToken);
+
     return dropiToken;
+}
+
+async function readIdUser()
+{
+    try
+    {
+
+
+        const idUser = SecureStore.getItemAsync("idUser").then(value =>
+        {
+            console.log("Value for key is", value);
+        });
+
+        return idUser;
+
+    } catch (error)
+    {
+        console.log(error);
+    }
+
 }
 
 async function deleteToken(token: any)
@@ -85,7 +121,7 @@ async function deleteToken(token: any)
     try
     {
         const tokenDropi = await SecureStore.deleteItemAsync(token)
-        //await AsyncStorage.setItem('Dropitoken', token);
+
         return tokenDropi;
     } catch (error)
     {
@@ -106,7 +142,7 @@ export const readtoken = () =>
                 if (res !== null)
                 {
                     resolve(res);
-                    //console.log('nuevo metodo leer token :', res);
+
 
                 } else
                 {
@@ -127,5 +163,7 @@ export
     readNameUser,
     saveToken,
     readToken,
-    deleteToken
+    deleteToken,
+    saveIdUser,
+    readIdUser
 }

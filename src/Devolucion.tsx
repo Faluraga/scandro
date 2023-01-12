@@ -8,11 +8,13 @@ import { Divider } from 'react-native-paper';
 import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from 'lottie-react-native';
-import { readToken } from './storage/storage';
+import { readToken,readIdUser } from './storage/storage';
 // expo add expo-file-system expo-sharing xlsx
 import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import * as SecureStore from 'expo-secure-store';
+
 
 
 
@@ -28,6 +30,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     const [token, setToken] = React.useState('');
     const [idProduct, setIdProduct] = useState(0);
     const [idUser, setIdUser] = useState(0);
+    const [user_id, setUser_Id] = useState();
     const [idOrder, setIdOrder] = useState(0);
     const [nameProduct, setNameProduct] = useState();
     const [guide, setGuide] = useState([]);
@@ -43,12 +46,10 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     const [idDevolution, setIdDevolution] = useState();
     const [idHistoryInventories, setIdHistoryInventories] = useState();
     const [action, setAction] = useState(false);
-    let cosa1: any = 0
-    let cosa2: any = 0
-    var urlBaseDevelomentOrders = 'https://f462-179-32-16-224.ngrok.io/api/orders/getmyorders';
-    var urlBaseDevelomentProducts = 'https://f462-179-32-16-224.ngrok.io/api/products';
-    var urlBaseDevelomentDevolutions = 'https://f462-179-32-16-224.ngrok.io/api/devolution/create';
-    var urlBaseDevelomentHistoryDevolutions = 'https://f462-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution';
+    var urlBaseDevelomentOrders = 'https://28f6-179-32-16-224.ngrok.io/api/orders/getmyorders';
+    var urlBaseDevelomentProducts = 'https://28f6-179-32-16-224.ngrok.io/api/products';
+    var urlBaseDevelomentDevolutions = 'https://28f6-179-32-16-224.ngrok.io/api/devolution/create';
+    var urlBaseDevelomentHistoryDevolutions = 'https://28f6-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution';
 
 
 
@@ -121,7 +122,13 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
         },
     });
 
-
+        /////Lectura de  id y token usuario /////
+        useEffect(() =>
+        {
+            tokenUser();
+            getIdUser();
+    
+        },[]);
 
 
     const onRefresh = React.useCallback(() =>
@@ -145,8 +152,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
         data.then((value: any) =>
         {
             setToken(value);
-            //console.log('DEVOLUCIONES :',token);
-
+           
         }).catch((error: any) =>
         {
             console.log(error);
@@ -154,7 +160,22 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
         });
     }
 
+     /// Metodo para leer el token del usuario logueado , desde el local-storage
+     async function getIdUser()
+     {
+        const data: any = readIdUser();
 
+        data.then((value: any) =>
+        {
+            setUser_Id(value);
+           
+        }).catch((error: any) =>
+        {
+            console.log(error);
+
+        });
+     
+    }
     ////Funcion para listar ordenes de un usuario //////
     const getOrders = async (params: any) =>
     {
@@ -167,7 +188,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ "user_id": 2, 'filter_by': 'GUIA', 'value_filter_by': params })
+                body: JSON.stringify({ "user_id": user_id, 'filter_by': 'GUIA', 'value_filter_by': params })
             })
 
             var res = await response.json();
@@ -208,6 +229,8 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                     name_warehouse: name_warehouse,
                     guide: guide
                 }));
+              
+                
             }
 
         } catch (e)
@@ -257,8 +280,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                 {
                     alert(res.message);
                     var id_history_inventories = res.objects.id;
-                    console.log(idHistoryInventories);
-                    
+                   
                     setIdHistoryInventories(id_history_inventories);
 
                     if (action === false)
@@ -378,12 +400,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
 
     }, [arrayProducts]);
 
-    /////Lectura de token /////
-    useEffect(() =>
-    {
-        tokenUser();
 
-    });
 
     //// Request Camera Permission /////
     useEffect(() =>
@@ -537,11 +554,7 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
     };
 
 
-
-
-
-
-
+    
     return (
         <View style={styles.viewTotal}>
             <ImageBackground source={require('../Img/IMAGEN-1.jpg')} style={styles.fondo}>
@@ -690,18 +703,19 @@ export default function DevolucionScreen({ navigation, route }: { navigation: an
                     <FlatList
 
                         data={arrayProducts}
+                        initialNumToRender = {arrayProducts.length}
                         scrollEnabled={true}
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        keyExtractor={({ id }) => id}
+                        keyExtractor={( {id }) => id}
                         renderItem={({ item, index }) =>
                         {
                             return (
-                                <View style={{ flexDirection: "row", marginTop: 15, margin: 3, backgroundColor: changeStatusView.filter(e => e == index).length > 0 ? '#52C254' : 'white', borderRadius: 30, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}>
-                                    <View style={{ width: "10%", alignItems: "center" }}>
-                                        <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} key={item['id']} > {item['id_order']}  </Text>
+                                <View style={{ flexDirection: "row", marginTop: 15, margin: 3, backgroundColor: changeStatusView.filter(e => e == index).length > 0 ? '#52C254' : 'white', borderRadius: 30, justifyContent: 'center', alignContent: 'center', alignItems: 'center' }} key={item}>
+                                    <View style={{ width: "10%", alignItems: "center" }} >
+                                        <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} > {item['id_order']}  </Text>
                                     </View >
-                                    <View style={{ width: "60%", alignItems: "center" }}>
+                                    <View style={{ width: "60%", alignItems: "center" }} >
                                         <Text style={changeStatusView.filter(e => e == index).length > 0 ? { color: 'white', fontWeight: 'bold', fontSize: 15 } : { color: 'black', fontWeight: null } && { fontSize: 15 }} >  {item['guide']} </Text>
                                     </View>
                                     <View style={{ width: "15%", alignItems: "center", display: changeStatusView.filter(e => e == index).length > 0 ? 'none' : 'flex' }}>

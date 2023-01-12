@@ -6,7 +6,7 @@ import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, I
 import axios, { AxiosResponse, formToJSON } from 'axios';
 import IconEye from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { saveToken } from './storage/storage';
+import { saveToken , saveIdUser } from './storage/storage';
 import * as SecureStore from 'expo-secure-store';
 
 
@@ -122,7 +122,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://f462-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://28f6-179-32-16-224.ngrok.io/api/login';
 
 
     const password = () =>
@@ -166,11 +166,15 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 
           if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
           {
+            
             const status = "login"
             var DropiToken = resData.token;
-            console.log('TOKEN =>',DropiToken);
+            var idUser = resData.objects.id;
+    
             
-           
+            saveIdUser(idUser+'');
+            
+            
             saveToken(DropiToken).then(navigation.navigate("Home"));
             
           }
