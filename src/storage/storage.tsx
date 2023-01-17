@@ -50,8 +50,8 @@ async function saveIdUser(id: any)
 
     try
     {
-
-        const idUser = await SecureStore.setItemAsync('idUser', JSON.stringify(id))
+        //const idUser = await AsyncStorage.setItem('idUser',id); 
+        const idUser = await SecureStore.setItemAsync('idUser',id)
 
         return idUser;
     } catch (error)
@@ -100,13 +100,13 @@ async function readIdUser()
 {
     try
     {
-
-
-        const idUser = SecureStore.getItemAsync("idUser").then(value =>
+        const idUser  = SecureStore.getItemAsync("idUser")
+        .then(value =>
         {
-            console.log("Value for key is", value);
+            //console.log("Value for key is", value);
+            
         });
-
+        
         return idUser;
 
     } catch (error)
@@ -137,6 +137,27 @@ export const readtoken = () =>
     return new Promise((resolve, reject) =>
     {
         AsyncStorage.getItem('Dropitoken')
+            .then(res =>
+            {
+                if (res !== null)
+                {
+                    resolve(res);
+
+
+                } else
+                {
+                    resolve(false);
+                }
+            })
+            .catch(err => reject(err));
+    });
+};
+
+export const readId = () =>
+{
+    return new Promise((resolve, reject) =>
+    {
+        AsyncStorage.getItem('idUser')
             .then(res =>
             {
                 if (res !== null)

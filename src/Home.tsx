@@ -7,7 +7,7 @@ import { Menu, Divider, Provider } from 'react-native-paper';
 import SalidasScreen from './Salidas';
 import DevolucionScreen from './Devolucion';
 import Sidebar from './components/sidebar';
-import { readToken,deleteToken,saveToken } from './storage/storage';
+import { readToken,deleteToken,saveToken, saveIdUser } from './storage/storage';
 
 
 
@@ -25,7 +25,7 @@ import { readToken,deleteToken,saveToken } from './storage/storage';
     const closeMenu = () => setVisible(!visible);
     const [data, setData] = useState([{}]);
     const [token, setToken] = React.useState('');
-    var urlBaseDevelomentOrders = 'https://28f6-179-32-16-224.ngrok.io/api/logout';
+    var urlBaseDevelomentOrders = 'https://48c6-179-32-16-224.ngrok.io/api/logout';
 
 
 
@@ -159,8 +159,7 @@ import { readToken,deleteToken,saveToken } from './storage/storage';
        data.then((value: any) =>
        {
            setToken(value);
-           //console.log('TOKEN_HOME =>:',token);
-
+          
        }).catch((error: any) =>
        {
            console.log(error);
@@ -192,7 +191,7 @@ import { readToken,deleteToken,saveToken } from './storage/storage';
 
             const logout = resData.message;
             alert('Sesión cerrada exitosamente')
-            console.log(logout);
+           
           }
 
 
@@ -216,6 +215,7 @@ import { readToken,deleteToken,saveToken } from './storage/storage';
         }, 800);
      }).then(()=>{
         saveToken(''); 
+        saveIdUser('')
      })
     
     } catch (error)

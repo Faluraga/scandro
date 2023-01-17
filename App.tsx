@@ -42,7 +42,7 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
   useEffect(() =>
   {
     tokenUser();
-    console.log(token);
+    
     
   }, [])
   return (
