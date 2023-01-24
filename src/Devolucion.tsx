@@ -53,13 +53,13 @@ export default function DevolucionScreen({
   const [idHistoryInventories, setIdHistoryInventories] = useState();
   const [action, setAction] = useState(false);
   var urlBaseDevelomentOrders =
-    "https://48c6-179-32-16-224.ngrok.io/api/orders/getmyorders";
+    "https://2e53-179-32-16-224.ngrok.io/api/orders/getmyorders";
   var urlBaseDevelomentProducts =
-    "https://48c6-179-32-16-224.ngrok.io/api/products";
+    "https://2e53-179-32-16-224.ngrok.io/api/products";
   var urlBaseDevelomentDevolutions =
-    "https://48c6-179-32-16-224.ngrok.io/api/devolution/create";
+    "https://2e53-179-32-16-224.ngrok.io/api/devolution/create";
   var urlBaseDevelomentHistoryDevolutions =
-    "https://48c6-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution";
+    "https://2e53-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution";
 
   //Estilos
   const styles = StyleSheet.create({
@@ -154,10 +154,9 @@ export default function DevolucionScreen({
 
     data
       .then((value: any) => {
-        let secureStoreVariable = parseInt(value)
-       
+        let secureStoreVariable = parseInt(value);
+
         setGet_User_Id(value);
-        
       })
       .catch((error: any) => {
         console.log(error);
@@ -177,19 +176,15 @@ export default function DevolucionScreen({
           user_id: get_user_id,
           filter_by: "GUIA",
           value_filter_by: params,
-          supplier_id:2
+          supplier_id: 2,
         }),
       });
-      
-      
+
       var res = await response.json();
-    
-      
+
       if (res.isSuccess == true && res.status == 200) {
         const id_order: number = parseInt(res.objects[0].id);
         const id_user: number = parseInt(res.objects[0].user_id);
-       
-        
         const id_product: number = parseInt(
           res.objects[0].orderdetails[0].product.id
         );
@@ -242,7 +237,6 @@ export default function DevolucionScreen({
     quantity: any
   ) => {
     try {
-  
       (async () => {
         var response = await fetch(
           `${urlBaseDevelomentProducts}/${id_product}`,
@@ -255,7 +249,7 @@ export default function DevolucionScreen({
             },
             body: JSON.stringify({
               active: true,
-              supplier_id:2,
+              supplier_id: 2,
               id: id_product,
               add_stock_in_return: true,
               stock: stock_update,
@@ -264,7 +258,7 @@ export default function DevolucionScreen({
               type: "SIMPLE",
               historyInventories: [
                 {
-                  concept: "Devoluciones-" + new Date().toLocaleDateString(),
+                  concept: "Devoluciones-App-" + new Date().toLocaleDateString(),
                   type_movement: "ENTRADA",
                   quantity: quantity,
                   variation_id: null,
@@ -275,7 +269,6 @@ export default function DevolucionScreen({
         );
 
         var res = await response.json();
-       
 
         if (res.isSuccess == true && res.status == 200) {
           alert(res.message);
@@ -299,9 +292,6 @@ export default function DevolucionScreen({
   };
 
   const devolution = async () => {
-
-  
-    
     try {
       (async () => {
         var devolucion = await fetch(urlBaseDevelomentDevolutions, {
@@ -318,7 +308,6 @@ export default function DevolucionScreen({
         var dev = await devolucion.json();
 
         if (dev.isSuccess == true && dev.status == 200) {
-        
           var id_devolution = dev.objects.id;
           setIdDevolution(id_devolution);
           setAction(true);
@@ -349,7 +338,6 @@ export default function DevolucionScreen({
           }),
         });
         var res = await response.json();
-       
       })();
     } catch (e) {
       console.log("Error =>", e);
@@ -371,7 +359,6 @@ export default function DevolucionScreen({
   useEffect(() => {
     tokenUser();
     getIdUser();
-   
   }, []);
 
   /////Renderizado en primera instancia arreglo de productos//////
@@ -524,12 +511,12 @@ export default function DevolucionScreen({
         ...items,
       ]);
 
-      XLSX.utils.book_append_sheet(wb, ws, "Devoluciones", true);
+      XLSX.utils.book_append_sheet(wb, ws, "Devoluciones-App", true);
 
       const base64 = XLSX.write(wb, { type: "base64" });
       //console.log('archivo-base64=>', base64);
 
-      const filename = FileSystem.documentDirectory + "Devoluciones.xlsx";
+      const filename = FileSystem.documentDirectory + "Devoluciones-App.xlsx";
       FileSystem.writeAsStringAsync(filename, base64, {
         encoding: FileSystem.EncodingType.Base64,
       })
@@ -753,9 +740,12 @@ export default function DevolucionScreen({
                     alignContent: "center",
                     alignItems: "center",
                   }}
-                  key={item['id']}
+                  key={item["id"]}
                 >
-                  <View style={{ width: "10%", alignItems: "center" }} key={item['id']}>
+                  <View
+                    style={{ width: "10%", alignItems: "center" }}
+                    key={item["id"]}
+                  >
                     <Text
                       style={
                         changeStatusView.filter((e) => e == index).length > 0

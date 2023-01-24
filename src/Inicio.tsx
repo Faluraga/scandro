@@ -1,6 +1,4 @@
-//Pantalla Inicio
 
-//Importaciones
 import {
     stylesB,
     stylesL,
@@ -12,7 +10,7 @@ import React from 'react'
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 
 
-export default function Inicio({ navigation , route }:{ navigation:any , route:any })
+const Inicio = ({ navigation , route }:{ navigation:any , route:any })=>
 {
 
 ///Estilos 
@@ -70,7 +68,7 @@ const styles = StyleSheet.create({
         </View>
     )
 }
-
+export default Inicio;
 
 
 

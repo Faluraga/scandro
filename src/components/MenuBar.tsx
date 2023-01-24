@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
   menuBarContainer: {
     flexDirection: 'row',
     backgroundColor: '#e6e6e6',
+    color: 'blck',
     padding: 10,
   },
   menuBarItem: {

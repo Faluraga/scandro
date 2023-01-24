@@ -1,6 +1,4 @@
-//Pantalla de Iniciar Sesion
 
-//importaciones
 import React, { useState } from 'react'
 import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 import axios, { AxiosResponse, formToJSON } from 'axios';
@@ -11,14 +9,6 @@ import * as SecureStore from 'expo-secure-store';
 
 
 
-
-
-
-
-
-
-
-//Funcion principal del login
 export default function Login({ navigation, route }:{ navigation : any, route :any })
 {
 
@@ -122,7 +112,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://48c6-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://2e53-179-32-16-224.ngrok.io/api/login';
 
 
     const password = () =>
@@ -157,7 +147,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 
         .then(resData =>
         { 
-
+            
           if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.") {
             
               alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
