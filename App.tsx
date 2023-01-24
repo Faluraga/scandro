@@ -11,6 +11,10 @@ import DevolucionScreen from './src/Devolucion';
 import SalidasScreen from './src/Salidas';
 import Home from './src/Home';
 import { readToken } from './src/storage/storage';
+import { Provider } from 'react-redux';
+import {store} from './src/redux/store'
+
+const Stack = createNativeStackNavigator();
 
 
 const App = ({ navigation, route }: { navigation: any, route: any }) =>
@@ -46,10 +50,10 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
     
   }, [])
   return (
+
+    <Provider store={store}>
     <NavigationContainer>
-
       {token !== "" ?
-
         <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
@@ -65,6 +69,7 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
        </Stack.Navigator>
       }
     </NavigationContainer>
+    </Provider>
   );
 }
 
