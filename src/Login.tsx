@@ -1,15 +1,13 @@
 
 import React, { useState } from 'react'
 import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
-import axios, { AxiosResponse, formToJSON } from 'axios';
 import IconEye from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { saveToken , saveIdUser } from './storage/storage';
-import * as SecureStore from 'expo-secure-store';
+import { saveToken, saveIdUser } from './storage/storage';
+import * as rutas from './routes/routes';
 
 
-
-export default function Login({ navigation, route }:{ navigation : any, route :any })
+export default function Login({ navigation, route }: { navigation: any, route: any })
 {
 
     ///////Estilos/////////
@@ -106,14 +104,8 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 
     const [email, setEmail] = useState({});
     const [pass, setPass] = useState("");
-    //const [token, setToken] = useState('');
     const [data, setData] = useState({});
     const [passwordVisibility, setPasswordVisibility] = useState(true);
-
-
-    var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://2e53-179-32-16-224.ngrok.io/api/login';
-
 
     const password = () =>
     {
@@ -131,50 +123,51 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
     }
 
     ///Funcion de login 
-  async function login()
-  {
-
-    try
+    async function login()
     {
-      var response = await fetch(urlBaseDevelomentLogin, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
-      }).then(res => res.json())
 
-        .then(resData =>
-        { 
-            
-          if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.") {
-            
-              alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
-          }
-          
+        try
+        {
+            var response = await fetch(rutas.urlBaseProductionLogin, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
+            }).then(res => res.json())
 
-          if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
-          {
-            
-            const status = "login"
-            var DropiToken = resData.token;
-            var idUser = resData.objects.id;
-    
-            
-            saveIdUser(idUser+'');
-  
-            saveToken(DropiToken).then(navigation.navigate("Home"));
-            
-          }
-        });
+                .then(resData =>
+                {
 
-    } catch (e)
-    {
-      console.log('ERROR :', e);
-      alert(e)
+                    if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
+                    {
+
+                        alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
+                    }
+
+
+                    if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
+                    {
+
+                        const status = "login"
+                        var DropiToken = resData.token;
+                        var idUser = resData.objects.id;
+
+
+                        saveIdUser(idUser + '');
+
+                        saveToken(DropiToken).then(navigation.navigate("Home"));
+
+                    }
+                });
+
+        } catch (e)
+        {
+            console.log('ERROR :', e);
+            alert(e)
+        }
     }
-  }
 
 
 
@@ -192,16 +185,16 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
             <View style={{ width: '90%' }}>
 
                 <View style={styles.box_input}>
-                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su correo." onChangeText={(value) => setEmail(value)} autoComplete={'email'}  editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0"/>
+                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su correo." onChangeText={(value) => setEmail(value)} autoComplete={'email'} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0" />
                 </View>
 
             </View>
 
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%',left:12 }} >
+            <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', left: 12 }} >
 
                 <View style={styles.box_input}>
-                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su contraseña." onChangeText={(value) => setPass(value)}  secureTextEntry={passwordVisibility} autoComplete={'password'} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0" />
+                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su contraseña." onChangeText={(value) => setPass(value)} secureTextEntry={passwordVisibility} autoComplete={'password'} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0" />
                 </View>
 
                 <TouchableOpacity
@@ -224,11 +217,6 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
                     )}
                 </TouchableOpacity>
             </View>
-
-
-
-
-
             <View style={styles.btn_login}>
                 <TouchableOpacity onPress={() => login()}>
                     <Text style={styles.text_login}>

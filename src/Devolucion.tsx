@@ -17,11 +17,10 @@ import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from "lottie-react-native";
 import { readToken, readIdUser, readId } from "./storage/storage";
-// expo add expo-file-system expo-sharing xlsx
 import * as XLSX from "xlsx";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import * as SecureStore from "expo-secure-store";
+import * as rutas from './routes/routes'
 
 export default function DevolucionScreen({
   navigation,
@@ -52,15 +51,7 @@ export default function DevolucionScreen({
   const [idDevolution, setIdDevolution] = useState();
   const [idHistoryInventories, setIdHistoryInventories] = useState();
   const [action, setAction] = useState(false);
-  var urlBaseDevelomentOrders =
-    "https://2e53-179-32-16-224.ngrok.io/api/orders/getmyorders";
-  var urlBaseDevelomentProducts =
-    "https://2e53-179-32-16-224.ngrok.io/api/products";
-  var urlBaseDevelomentDevolutions =
-    "https://2e53-179-32-16-224.ngrok.io/api/devolution/create";
-  var urlBaseDevelomentHistoryDevolutions =
-    "https://2e53-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution";
-
+ 
   //Estilos
   const styles = StyleSheet.create({
     viewTotal: {
@@ -165,7 +156,7 @@ export default function DevolucionScreen({
   ////Funcion para listar ordenes de un usuario //////
   const getOrders = async (params: any) => {
     try {
-      var response = await fetch(urlBaseDevelomentOrders, {
+      var response = await fetch(rutas.urlBaseDevelomentOrders, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -176,7 +167,7 @@ export default function DevolucionScreen({
           user_id: get_user_id,
           filter_by: "GUIA",
           value_filter_by: params,
-          supplier_id: 2,
+          //supplier_id: 2,
         }),
       });
 
@@ -239,7 +230,7 @@ export default function DevolucionScreen({
     try {
       (async () => {
         var response = await fetch(
-          `${urlBaseDevelomentProducts}/${id_product}`,
+          `${rutas.urlBaseDevelomentProducts}/${id_product}`,
           {
             method: "PUT",
             headers: {
@@ -294,7 +285,7 @@ export default function DevolucionScreen({
   const devolution = async () => {
     try {
       (async () => {
-        var devolucion = await fetch(urlBaseDevelomentDevolutions, {
+        var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -325,7 +316,7 @@ export default function DevolucionScreen({
   ) => {
     try {
       (async () => {
-        var response = await fetch(urlBaseDevelomentHistoryDevolutions, {
+        var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
