@@ -4,7 +4,7 @@ import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, I
 import axios, { AxiosResponse, formToJSON } from 'axios';
 import IconEye from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { saveToken , saveIdUser } from './storage/storage';
+import { saveToken , saveIdUser, saveSupplierId, readSupplierId } from './storage/storage';
 import * as SecureStore from 'expo-secure-store';
 
 
@@ -112,7 +112,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
 
 
     var urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-    var urlBaseDevelomentLogin = 'https://2e53-179-32-16-224.ngrok.io/api/login';
+    var urlBaseDevelomentLogin = 'https://b231-179-32-16-224.ngrok.io/api/login';
 
 
     const password = () =>
@@ -148,6 +148,7 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
         .then(resData =>
         { 
             
+            
           if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.") {
             
               alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
@@ -160,11 +161,13 @@ export default function Login({ navigation, route }:{ navigation : any, route :a
             const status = "login"
             var DropiToken = resData.token;
             var idUser = resData.objects.id;
-    
+            var supplierId = resData.objects.logistic_user_provider[0].supplier_id
+           
+            
             
             saveIdUser(idUser+'');
-  
             saveToken(DropiToken).then(navigation.navigate("Home"));
+            saveSupplierId(JSON.stringify(supplierId));
             
           }
         });

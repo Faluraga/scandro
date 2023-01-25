@@ -15,6 +15,17 @@ async function savePassword(data: any)
     }
 }
 
+async function saveSupplierId(id: string)
+{
+    try
+    {
+        await SecureStore.setItemAsync('supplier_id', id);
+    } catch (error)
+    {
+        console.log(error);
+    }
+}
+
 async function saveNameUser(name: any, surname: any)
 {
 
@@ -115,6 +126,21 @@ async function readIdUser()
     }
 
 }
+async function readSupplierId()
+{
+    try
+    {
+        const supplierId  =  await SecureStore.getItemAsync("supplier_id")
+        
+        
+        return supplierId
+
+    } catch (error)
+    {
+        console.log(error);
+    }
+
+}
 
 async function deleteToken(token: any)
 {
@@ -186,5 +212,8 @@ export
     readToken,
     deleteToken,
     saveIdUser,
-    readIdUser
-}
+    readIdUser,
+    saveSupplierId,
+    readSupplierId,
+};
+   
