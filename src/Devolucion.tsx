@@ -1,22 +1,23 @@
 //Importaciones
 import React, { useState, useEffect, useRef } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  TouchableOpacity,
-  Image,
-  Button,
-  FlatList,
-} from "react-native";
+import
+  {
+    StyleSheet,
+    Text,
+    View,
+    ImageBackground,
+    TouchableOpacity,
+    Image,
+    Button,
+    FlatList,
+  } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import { Divider } from "react-native-paper";
 import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from "lottie-react-native";
-import { readToken, readIdUser, readId , readSupplierId } from "./storage/storage";
+import { readToken, readIdUser, readId, readSupplierId } from "./storage/storage";
 // expo add expo-file-system expo-sharing xlsx
 import * as XLSX from "xlsx";
 import * as FileSystem from "expo-file-system";
@@ -29,7 +30,8 @@ export default function DevolucionScreen({
 }: {
   navigation: any;
   route: any;
-}) {
+})
+{
   /////Estados/////
   const [arrayProducts, setArrayProducts] = useState([]);
   const [value, setValue] = React.useState(0);
@@ -52,7 +54,9 @@ export default function DevolucionScreen({
   const [idDevolution, setIdDevolution] = useState();
   const [idHistoryInventories, setIdHistoryInventories] = useState();
   const [action, setAction] = useState(false);
-  
+  const [supplierId, setSupplierId] = useState();
+
+
   //Estilos
   const styles = StyleSheet.create({
     viewTotal: {
@@ -115,52 +119,65 @@ export default function DevolucionScreen({
     },
   });
 
-  const onRefresh = React.useCallback(() => {
-    (async () => {
+  const onRefresh = React.useCallback(() =>
+  {
+    (async () =>
+    {
       setRefreshing(true);
-      setTimeout(() => {
+      setTimeout(() =>
+      {
         setRefreshing(false);
       }, 800);
     })();
-    return () => {
+    return () =>
+    {
       setRefreshing(false);
     };
   }, []);
 
   /// Metodo para leer el token del usuario logueado , desde el local-storage
-  async function tokenUser() {
+  async function tokenUser()
+  {
     const data: any = readToken();
 
     data
-      .then((value: any) => {
+      .then((value: any) =>
+      {
         setToken(value);
       })
-      .catch((error: any) => {
+      .catch((error: any) =>
+      {
         console.log(error);
       });
   }
 
   /// Metodo para leer el token del usuario logueado , desde el local-storage
-  async function getIdUser() {
+  async function getIdUser()
+  {
     const data: any = readIdUser();
 
     data
-      .then((value: any) => {
+      .then((value: any) =>
+      {
         let secureStoreVariable = parseInt(value);
 
         setGet_User_Id(value);
       })
-      .catch((error: any) => {
+      .catch((error: any) =>
+      {
         console.log(error);
       });
-      return data;
+    return data;
   }
 
-  async function getSupplierId() {
-    let result = await readSupplierId().then((value: any) => {
+  async function getSupplierId()
+  {
+    let result = await readSupplierId().then((value: any) =>
+    {
       setSupplierId(value);
     })
-    .catch((error: any) => {
+      .catch((error: any) =>
+      {
         console.log(error);
       });
 
@@ -169,8 +186,10 @@ export default function DevolucionScreen({
 
 
   ////Funcion para listar ordenes de un usuario //////
-  const getOrders = async (params: any) => {
-    try {
+  const getOrders = async (params: any) =>
+  {
+    try
+    {
       var response = await fetch(rutas.urlBaseDevelomentOrders, {
         method: "POST",
         headers: {
@@ -188,7 +207,8 @@ export default function DevolucionScreen({
 
       var res = await response.json();
 
-      if (res.isSuccess == true && res.status == 200) {
+      if (res.isSuccess == true && res.status == 200)
+      {
         const id_order: number = parseInt(res.objects[0].id);
         const id_user: number = parseInt(res.objects[0].user_id);
         const id_product: number = parseInt(
@@ -228,7 +248,8 @@ export default function DevolucionScreen({
           })
         );
       }
-    } catch (e) {
+    } catch (e)
+    {
       console.log("ERROR :", e);
       alert("ESTA GUIA NO TE PERTENECE");
     }
@@ -241,9 +262,12 @@ export default function DevolucionScreen({
     stock_update: any,
     warehouse: any,
     quantity: any
-  ) => {
-    try {
-      (async () => {
+  ) =>
+  {
+    try
+    {
+      (async () =>
+      {
         var response = await fetch(
           `${rutas.urlBaseDevelomentProducts}/${id_product}`,
           {
@@ -276,30 +300,38 @@ export default function DevolucionScreen({
 
         var res = await response.json();
 
-        if (res.isSuccess == true && res.status == 200) {
+        if (res.isSuccess == true && res.status == 200)
+        {
           alert(res.message);
           var id_history_inventories = res.objects.id;
 
           setIdHistoryInventories(id_history_inventories);
           setChangeStatusView((current) => current.concat(index));
-          if (action === false) {
+          if (action === false)
+          {
             await devolution();
-          } else if (action === true) {
+          } else if (action === true)
+          {
             operationsDevoltions(id_history_inventories);
           }
-        } else if (res.isSuccess === false) {
+        } else if (res.isSuccess === false)
+        {
           alert(res.message);
         }
       })();
-    } catch (e) {
+    } catch (e)
+    {
       console.log("ERROR =>", e);
       alert("Error al actualizar");
     }
   };
 
-  const devolution = async () => {
-    try {
-      (async () => {
+  const devolution = async () =>
+  {
+    try
+    {
+      (async () =>
+      {
         var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
           method: "POST",
           headers: {
@@ -313,13 +345,15 @@ export default function DevolucionScreen({
         });
         var dev = await devolucion.json();
 
-        if (dev.isSuccess == true && dev.status == 200) {
+        if (dev.isSuccess == true && dev.status == 200)
+        {
           var id_devolution = dev.objects.id;
           setIdDevolution(id_devolution);
           setAction(true);
         }
       })();
-    } catch (e) {
+    } catch (e)
+    {
       console.log("Error =>", e);
       alert(e);
     }
@@ -328,9 +362,12 @@ export default function DevolucionScreen({
   const historyDevolutions = async (
     id_devolution: any,
     id_hInventories: any
-  ) => {
-    try {
-      (async () => {
+  ) =>
+  {
+    try
+    {
+      (async () =>
+      {
         var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
           method: "POST",
           headers: {
@@ -345,41 +382,49 @@ export default function DevolucionScreen({
         });
         var res = await response.json();
       })();
-    } catch (e) {
+    } catch (e)
+    {
       console.log("Error =>", e);
       alert(e);
     }
   };
 
-  const operationsDevoltions = (idHInventory: any) => {
-    if (action === true) {
+  const operationsDevoltions = (idHInventory: any) =>
+  {
+    if (action === true)
+    {
       historyDevolutions(idDevolution, idHInventory);
     }
   };
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     historyDevolutions(idDevolution, idHistoryInventories);
   }, [action]);
 
   /////Lectura de  id y token usuario /////
-  useEffect(() => {
+  useEffect(() =>
+  {
     tokenUser();
     getIdUser();
     getSupplierId();
   }, []);
 
   /////Renderizado en primera instancia arreglo de productos//////
-  useEffect(() => {
+  useEffect(() =>
+  {
     setArrayProducts(arrayProducts);
   }, [arrayProducts]);
 
   //// Request Camera Permission /////
-  useEffect(() => {
+  useEffect(() =>
+  {
     askForCameraPermission();
   }, []);
 
   ////Boton añadir ////
-  const handleAddProducts = (params: any) => {
+  const handleAddProducts = (params: any) =>
+  {
     setScanned(false);
     setVisibleAnimation(true);
   };
@@ -389,8 +434,10 @@ export default function DevolucionScreen({
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState("");
-  const askForCameraPermission = () => {
-    (async () => {
+  const askForCameraPermission = () =>
+  {
+    (async () =>
+    {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === "granted");
     })();
@@ -403,43 +450,53 @@ export default function DevolucionScreen({
   }: {
     type: any;
     data: string;
-  }) => {
-    try {
+  }) =>
+  {
+    try
+    {
       var guia = data;
       if (
         data != "" &&
         arrayProducts.map((e) => e["guide"]).includes(data) !== true
-      ) {
+      )
+      {
         setScanned(true);
         getOrders(data).catch(console.error);
       }
-      if (arrayProducts.map((e) => e["guide"]).includes(data) === true) {
+      if (arrayProducts.map((e) => e["guide"]).includes(data) === true)
+      {
         alert("GUIA YA ESCANEADA");
         //setScanned(false);
-        (async () => {
+        (async () =>
+        {
           setScanned(true);
-          setTimeout(() => {
+          setTimeout(() =>
+          {
             setScanned(false);
           }, 3000);
         })();
-        return () => {
+        return () =>
+        {
           setRefreshing(false);
         };
       }
-    } catch (error) {
+    } catch (error)
+    {
       console.log(error);
     }
   };
 
   // Check permissions and return the screens
-  if (hasPermission === null) {
+  if (hasPermission === null)
+  {
     return (
       <View style={styles.containerBarCode}>
         <Text>Solicitando permiso de cámara</Text>
       </View>
     );
   }
-  if (hasPermission === false) {
+  if (hasPermission === false)
+  {
     return (
       <View style={styles.containerBarCode}>
         <Text style={{ margin: 10, fontSize: 17 }}>Sin acceso a la camara</Text>
@@ -458,22 +515,26 @@ export default function DevolucionScreen({
     stock_update: any,
     warehouse: any,
     quantity: any
-  ) {
-    (async () => {
+  )
+  {
+    (async () =>
+    {
       await updateStock(
         index,
         id_product,
         stock_update,
         warehouse,
         quantity
-      ).then(() => {
+      ).then(() =>
+      {
         setEnableButtonExcel(true);
       });
     })();
   }
 
   ///Eliminar producto de la lista ///
-  async function deleteStock(index: any, guide: any) {
+  async function deleteStock(index: any, guide: any)
+  {
     const indice = arrayProducts.map((e) => e["guide"]).indexOf(guide);
     arrayProducts.splice(indice, 1);
     onRefresh();
@@ -483,11 +544,14 @@ export default function DevolucionScreen({
 
   //////Generate-download excel//////
 
-  const generateExcel = () => {
-    if (arrayProducts.length >= 1) {
+  const generateExcel = () =>
+  {
+    if (arrayProducts.length >= 1)
+    {
       let wb = XLSX.utils.book_new();
 
-      let items = arrayProducts.map((e: any) => {
+      let items = arrayProducts.map((e: any) =>
+      {
         return [
           e["guide"],
           e["id_order"],
@@ -527,14 +591,17 @@ export default function DevolucionScreen({
       FileSystem.writeAsStringAsync(filename, base64, {
         encoding: FileSystem.EncodingType.Base64,
       })
-        .then(() => {
+        .then(() =>
+        {
           Sharing.shareAsync(filename);
         })
-        .catch((e) => {
+        .catch((e) =>
+        {
           console.log(e);
           alert(e);
         });
-    } else {
+    } else
+    {
       alert(
         "Debes escanear al menos una guia para generar un documento xlsx(Excel)"
       );
@@ -666,14 +733,22 @@ export default function DevolucionScreen({
                     borderRadius: 100,
                   }}
                 >
+                
                   <View>
+                  <Animatable.View
+                    animation="pulse"
+                    duration={1000}
+                    iterationCount={"infinite"}
+                  >
                     <IconBar
                       name="plus-circle"
                       size={56}
                       color="#0BA5F2"
                       placeholder={"Agregar"}
                     />
+                    </Animatable.View>
                   </View>
+                 
                 </TouchableOpacity>
               </View>
             </View>
@@ -731,126 +806,127 @@ export default function DevolucionScreen({
             refreshing={refreshing}
             onRefresh={onRefresh}
             keyExtractor={({ id }) => id}
-            renderItem={({ item, index }) => {
+            renderItem={({ item, index }) =>
+            {
               return (
                 <React.Fragment key={item["id_order"]}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginTop: 15,
-                    margin: 3,
-                    backgroundColor:
-                      changeStatusView.filter((e) => e == index).length > 0
-                        ? "#52C254"
-                        : "white",
-                    borderRadius: 30,
-                    justifyContent: "center",
-                    alignContent: "center",
-                    alignItems: "center",
-                  }}
-          
-                >
-                  <View
-                    style={{ width: "10%", alignItems: "center" }} 
-                  >
-                    <Text
-                      style={
-                        changeStatusView.filter((e) => e == index).length > 0
-                          ? { color: "white", fontWeight: "bold", fontSize: 15 }
-                          : { color: "black", fontWeight: null } && {
-                              fontSize: 15,
-                            }
-                      }
-                    >
-                      {" "}
-                      {item["id_order"]}{" "}
-                    </Text>
-                  </View>
-                  <View style={{ width: "60%", alignItems: "center" }}>
-                    <Text
-                      style={
-                        changeStatusView.filter((e) => e == index).length > 0
-                          ? { color: "white", fontWeight: "bold", fontSize: 15 }
-                          : { color: "black", fontWeight: null } && {
-                              fontSize: 15,
-                            }
-                      }
-                    >
-                      {" "}
-                      {item["guide"]}{" "}
-                    </Text>
-                  </View>
                   <View
                     style={{
-                      width: "15%",
-                      alignItems: "center",
-                      display:
+                      flexDirection: "row",
+                      marginTop: 15,
+                      margin: 3,
+                      backgroundColor:
                         changeStatusView.filter((e) => e == index).length > 0
-                          ? "none"
-                          : "flex",
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={{
-                        width: 32,
-                        height: 32,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        //backgroundColor: "#52C254",
-                        borderRadius: 50,
-                      }}
-                      onPress={() =>
-                        addStock(
-                          index,
-                          item["id_product"],
-                          item["stock_update"],
-                          item["id_warehouse"],
-                          item["quantity"]
-                        )
-                      }
-                    >
-                      <View>
-                        <IconBar
-                          name="briefcase-check"
-                          size={27}
-                          color="#52C254"
-                          placeholder={"Agregar"}
-                        />
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                  <View
-                    style={{
-                      width: "15%",
+                          ? "#52C254"
+                          : "white",
+                      borderRadius: 30,
+                      justifyContent: "center",
+                      alignContent: "center",
                       alignItems: "center",
-                      display:
-                        changeStatusView.filter((e) => e == index).length > 0
-                          ? "none"
-                          : "flex",
                     }}
+
                   >
-                    <TouchableOpacity
-                      style={{
-                        width: 32,
-                        height: 32,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        //backgroundColor: "#F6505C",
-                        borderRadius: 50,
-                      }}
-                      onPress={() => deleteStock(index, item["guide"])}
+                    <View
+                      style={{ width: "10%", alignItems: "center" }}
                     >
-                      <View>
-                        <IconBar
-                          name="delete-forever"
-                          size={30}
-                          color="#F6505C"
-                          placeholder={"Eliminar"}
-                        />
-                      </View>
-                    </TouchableOpacity>
+                      <Text
+                        style={
+                          changeStatusView.filter((e) => e == index).length > 0
+                            ? { color: "white", fontWeight: "bold", fontSize: 15 }
+                            : { color: "black", fontWeight: null } && {
+                              fontSize: 15,
+                            }
+                        }
+                      >
+                        {" "}
+                        {item["id_order"]}{" "}
+                      </Text>
+                    </View>
+                    <View style={{ width: "60%", alignItems: "center" }}>
+                      <Text
+                        style={
+                          changeStatusView.filter((e) => e == index).length > 0
+                            ? { color: "white", fontWeight: "bold", fontSize: 15 }
+                            : { color: "black", fontWeight: null } && {
+                              fontSize: 15,
+                            }
+                        }
+                      >
+                        {" "}
+                        {item["guide"]}{" "}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        width: "15%",
+                        alignItems: "center",
+                        display:
+                          changeStatusView.filter((e) => e == index).length > 0
+                            ? "none"
+                            : "flex",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          width: 32,
+                          height: 32,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          //backgroundColor: "#52C254",
+                          borderRadius: 50,
+                        }}
+                        onPress={() =>
+                          addStock(
+                            index,
+                            item["id_product"],
+                            item["stock_update"],
+                            item["id_warehouse"],
+                            item["quantity"]
+                          )
+                        }
+                      >
+                        <View>
+                          <IconBar
+                            name="briefcase-check"
+                            size={27}
+                            color="#52C254"
+                            placeholder={"Agregar"}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                    <View
+                      style={{
+                        width: "15%",
+                        alignItems: "center",
+                        display:
+                          changeStatusView.filter((e) => e == index).length > 0
+                            ? "none"
+                            : "flex",
+                      }}
+                    >
+                      <TouchableOpacity
+                        style={{
+                          width: 32,
+                          height: 32,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          //backgroundColor: "#F6505C",
+                          borderRadius: 50,
+                        }}
+                        onPress={() => deleteStock(index, item["guide"])}
+                      >
+                        <View>
+                          <IconBar
+                            name="delete-forever"
+                            size={30}
+                            color="#F6505C"
+                            placeholder={"Eliminar"}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
                 </React.Fragment>
               );
             }}

@@ -4,7 +4,7 @@ import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, I
 import IconEye from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as rutas from './routes/routes';
-import { saveToken , saveIdUser, saveSupplierId, readSupplierId } from './storage/storage';
+import { saveToken, saveIdUser, saveSupplierId, readSupplierId } from './storage/storage';
 import * as SecureStore from 'expo-secure-store';
 
 
@@ -127,12 +127,10 @@ export default function Login({ navigation, route }: { navigation: any, route: a
     ///Funcion de login 
 
     async function login()
-
-    {
-
+{
         try
         {
-            var response = await fetch(rutas.urlBaseProductionLogin, {
+            var response = await fetch(rutas.urlBaseTestLogin, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -144,30 +142,34 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                 .then(resData =>
                 {
 
+                    
                     if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
                     {
 
                         alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
                     }
 
-
                     if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
                     {
-
+                        
                         const status = "login"
                         var DropiToken = resData.token;
                         var idUser = resData.objects.id;
-
+                    
+                        if (resData.objects.roleNames[0] === "LOGISTIC") { 
+                           
+                            var supplierId = JSON.stringify(resData.objects.logistic_user_provider[0].supplier_id)
+                            saveSupplierId(supplierId)
+                        };
 
                         saveIdUser(idUser + '');
-
                         saveToken(DropiToken).then(navigation.navigate("Home"));
 
                     }
                 });
 
-        } catch (e)
-        {
+            } catch (e)
+            {
             console.log('ERROR :', e);
             alert(e)
         }

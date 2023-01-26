@@ -39,6 +39,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
   const [visibleCodeBar, setVisibleCodeBar] = useState(true);
   const [visible, setVisible] = useState(false);
   const [visibleModal, setVisibleModal] = useState(false);
+  const [visibleModalInfo, setVisibleModalInfo] = useState(false);
 
   const [messageModal, setMessageModal] = useState("");
   const openMenu = () => setVisible(!visible);
@@ -46,7 +47,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
   const [data, setData] = useState([{}]);
   const [token, setToken] = React.useState("");
   const [menuBar, setMenuBar] = useState(["Configuración", "notificaciones"]);
-  const [cosa, setCosa] = useState(false);
+  
 
   var variableGlobal = useSelector((state:any)=>state.var1.value)
   const dispatch = useDispatch()
@@ -58,7 +59,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
   const resetValue = () => {
     dispatch(resetByAmount(''))};
   
-  console.log('ESTA ES REDUX=>',variableGlobal);
+  //console.log('REDUX=>',variableGlobal);
 
   /////Estilos//////
   const styles = StyleSheet.create({
@@ -203,8 +204,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
   {
 
     try
-    {
-      console.log('funcion ejecutada');
+    { 
       var response = await fetch(rutas.urlBaseDevelomentLogout, {
         method: "POST",
         headers: {
@@ -222,11 +222,11 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         saveIdUser("");
         saveSupplierId("")
         // setMessageModal("Sesión cerrada exitosamente");
-
+        setVisibleModalInfo(true);
         setTimeout(() =>
         {
-          navigation.navigate(Inicio)
-        }, 800);
+          navigation.navigate('Inicio');
+        }, 800)
 
         setVisibleModal(false);
         setTimeout(() =>
@@ -244,7 +244,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         saveToken("");
         saveIdUser("");
         saveSupplierId("")
-        navigation.navigate(Inicio);
+        navigation.navigate('Inicio');
       }
       console.log(res);
     } catch (e)
@@ -253,6 +253,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
       //alert(e)
       saveToken("");
       saveIdUser("");
+      saveSupplierId("")
     }
   };
 
@@ -262,8 +263,8 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
     return (
       <View>
         <Modal
-          animationIn="slideInUp"
-          animationInTiming={800}
+          animationIn="bounce"
+          animationInTiming={1000}
           isVisible={visibleModal}
           onBackdropPress={() => setVisible(!visibleModal)}
           onSwipeComplete={() => setVisible(!visibleModal)}
@@ -371,6 +372,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         style={styles.fondo}
       >
         <ModalConfirmation></ModalConfirmation>
+        <ModalInfo value = {visibleModalInfo}  params={'Sesión Cerrada Exitosamente'}/>
         <View>
           <View>
             <Provider>

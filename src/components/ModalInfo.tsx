@@ -11,15 +11,7 @@ const ModalInfo = ({
   params: any;
 }) => {
   const [visible, setVisible] = useState(value);
-  const [confirmation, setConfirmation] = useState(false);
 
-  const sendConfirmation = () => {
-    setConfirmation(true);
-    console.log(confirmation);
-
-    setTimeout(() => {
-      setConfirmation(false);
-    }, 2000);
 
     useEffect(() => {
       setVisible(value);
@@ -31,7 +23,7 @@ const ModalInfo = ({
     return (
       <View>
         <Modal
-          animationIn="slideInUp"
+          animationIn="bounce"
           animationInTiming={1000}
           isVisible={visible}
           onBackdropPress={() => setVisible(!visible)}
@@ -78,6 +70,6 @@ const ModalInfo = ({
       </View>
     );
   };
-};
+
 
 export default ModalInfo;
