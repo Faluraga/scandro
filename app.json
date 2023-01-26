@@ -25,7 +25,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "orange"
-      }
+      },
+      "android":{"package": "com.faluradev.scandro","versionCode": "1.0.0"}
     },
     "web": {
       "favicon": "./assets/img/dropiSettings.png"

@@ -1,25 +1,28 @@
 //Importaciones
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  ImageBackground,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  Button,
-} from "react-native";
+import
+  {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    ImageBackground,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    Button,
+  } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Menu, Divider, Provider } from "react-native-paper";
 import Sidebar from "./components/sidebar";
-import {
-  readToken,
-  deleteToken,
-  saveToken,
-  saveIdUser,
-} from "./storage/storage";
+import
+  {
+    readToken,
+    deleteToken,
+    saveToken,
+    saveIdUser,
+    saveSupplierId,
+  } from "./storage/storage";
 import Inicio from "./Inicio";
 import Modal from "react-native-modal";
 import ModalInfo from "./components/ModalInfo";
@@ -30,7 +33,8 @@ import { changeVariable,resetByAmount } from "./redux/slices/variableGlobal";
 import * as rutas from './routes/routes'
 
 
-const Home = ({ navigation, route }: { navigation: any; route: any }) => {
+const Home = ({ navigation, route }: { navigation: any; route: any }) =>
+{
   /////Estados/////
   const [visibleCodeBar, setVisibleCodeBar] = useState(true);
   const [visible, setVisible] = useState(false);
@@ -42,7 +46,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) => {
   const [data, setData] = useState([{}]);
   const [token, setToken] = React.useState("");
   const [menuBar, setMenuBar] = useState(["Configuración", "notificaciones"]);
-  const [cosa,setCosa]=useState(false);
+  const [cosa, setCosa] = useState(false);
 
   var variableGlobal = useSelector((state:any)=>state.var1.value)
   const dispatch = useDispatch()
@@ -55,7 +59,6 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) => {
     dispatch(resetByAmount(''))};
   
   console.log('ESTA ES REDUX=>',variableGlobal);
-
 
   /////Estilos//////
   const styles = StyleSheet.create({
@@ -166,34 +169,41 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) => {
     },
   });
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     tokenUser();
-   
+
 
   }, []);
 
   /// Metodo para leer el token del usuario logueado , desde el local-storage
-  async function tokenUser() {
+  async function tokenUser()
+  {
     const data: any = readToken();
 
     data
-      .then((value: any) => {
+      .then((value: any) =>
+      {
         setToken(value);
       })
-      .catch((error: any) => {
+      .catch((error: any) =>
+      {
         console.log(error);
       });
   }
 
   /// Metodo para cerrar sesion desde backend dropi
-  async function logout() {
+  async function logout()
+  {
     setVisibleModal(!visibleModal);
     setMessageModal("Seguro que desea cerrar la sesión ? ");
   }
 
-  const sesionClose = async () => {
-   
-    try {
+  const sesionClose = async () =>
+  {
+
+    try
+    {
       console.log('funcion ejecutada');
       var response = await fetch(rutas.urlBaseDevelomentLogout, {
         method: "POST",
@@ -206,141 +216,151 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) => {
       });
 
       var res = await response.json();
-      if (res.isSuccess === true && res.status === 200) {
+      if (res.isSuccess === true && res.status === 200)
+      {
         saveToken("");
         saveIdUser("");
+        saveSupplierId("")
         // setMessageModal("Sesión cerrada exitosamente");
-       
-        setTimeout(() => {
+
+        setTimeout(() =>
+        {
           navigation.navigate(Inicio)
         }, 800);
-        setCosa(true);
+
         setVisibleModal(false);
-        setTimeout(() => {
+        setTimeout(() =>
+        {
           setVisibleModal(false)
-          setCosa(false);
-        },800);
+
+        }, 800);
 
 
-      } else if (res.isSuccess === false && res.status === 400) {
+      } else if (res.isSuccess === false && res.status === 400)
+      {
         alert(
           "No se pudo analizar el token de la solicitud, Cierre la aplicación"
         );
         saveToken("");
         saveIdUser("");
+        saveSupplierId("")
         navigation.navigate(Inicio);
       }
       console.log(res);
-    } catch (e) {
+    } catch (e)
+    {
       console.log("ERROR :", e);
       //alert(e)
+      saveToken("");
+      saveIdUser("");
     }
   };
 
-  const ModalConfirmation =()=>{
-  
-    return(
+  const ModalConfirmation = () =>
+  {
+
+    return (
       <View>
-      <Modal
-        animationIn="slideInUp"
-        animationInTiming={800}
-        isVisible={visibleModal}
-        onBackdropPress={() => setVisible(!visibleModal)}
-        onSwipeComplete={() => setVisible(!visibleModal)}
+        <Modal
+          animationIn="slideInUp"
+          animationInTiming={800}
+          isVisible={visibleModal}
+          onBackdropPress={() => setVisible(!visibleModal)}
+          onSwipeComplete={() => setVisible(!visibleModal)}
         //onSwipeCancel={() => setVisible(!visibleModal)}
-     
-      >  
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 22,
-          }}
+
         >
           <View
             style={{
-              margin: 20,
-              backgroundColor: "#dcf3fb",
-              borderRadius: 20,
-              padding: 35,
+              flex: 1,
+              justifyContent: "center",
               alignItems: "center",
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 4,
-              elevation: 5,
+              marginTop: 22,
             }}
           >
-            <Text
+            <View
               style={{
-                fontWeight: "bold",
-                fontSize: 20,
-                color: "#FF6145",
+                margin: 20,
+                backgroundColor: "#dcf3fb",
+                borderRadius: 20,
+                padding: 35,
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
               }}
             >
-              {messageModal}
-            </Text>
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 20,
+                  color: "#FF6145",
+                }}
+              >
+                {messageModal}
+              </Text>
 
-            <View style={{ flexDirection: "row", marginTop: 20 }}>
-              <View style={{ width: "50%" }}>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "red",
-                    width: 80,
-                    height: 32,
-                    borderRadius: 18,
-                    alignItems: "center",
-                    alignSelf: "center",
-                  }}
-                   onPress={() => setVisibleModal(!visibleModal)}
-                >
-                  <Text
+              <View style={{ flexDirection: "row", marginTop: 20 }}>
+                <View style={{ width: "50%" }}>
+                  <TouchableOpacity
                     style={{
-                      fontWeight: "bold",
-                      fontSize: 16,
-                      color: "#fff",
-                      marginTop: 3,
-                      justifyContent: "center",
+                      backgroundColor: "red",
+                      width: 80,
+                      height: 32,
+                      borderRadius: 18,
+                      alignItems: "center",
+                      alignSelf: "center",
                     }}
+                    onPress={() => setVisibleModal(!visibleModal)}
                   >
-                    Cancelar
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <View style={{ width: "50%" }}>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "green",
-                    width: 80,
-                    height: 32,
-                    borderRadius: 18,
-                    alignItems: "center",
-                    alignSelf: "center",
-                  }}
-                  onPress={() => sesionClose()}
-                >
-                  <Text
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: 16,
+                        color: "#fff",
+                        marginTop: 3,
+                        justifyContent: "center",
+                      }}
+                    >
+                      Cancelar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={{ width: "50%" }}>
+                  <TouchableOpacity
                     style={{
-                      fontWeight: "bold",
-                      fontSize: 16,
-                      color: "#fff",
-                      marginTop: 3,
-                      justifyContent: "center",
+                      backgroundColor: "green",
+                      width: 80,
+                      height: 32,
+                      borderRadius: 18,
+                      alignItems: "center",
+                      alignSelf: "center",
                     }}
+                    onPress={() => sesionClose()}
                   >
-                    Aceptar
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: 16,
+                        color: "#fff",
+                        marginTop: 3,
+                        justifyContent: "center",
+                      }}
+                    >
+                      Aceptar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
     )
   }
 
@@ -350,7 +370,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) => {
         source={require("../Img/fondo_blanco.png")}
         style={styles.fondo}
       >
-      <ModalConfirmation></ModalConfirmation>
+        <ModalConfirmation></ModalConfirmation>
         <View>
           <View>
             <Provider>
@@ -399,7 +419,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) => {
                 />
               </TouchableOpacity>
             </Provider>
-           
+
           </View>
         </View>
       </ImageBackground>

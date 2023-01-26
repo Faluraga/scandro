@@ -16,7 +16,8 @@ import { Divider } from "react-native-paper";
 import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from "lottie-react-native";
-import { readToken, readIdUser, readId } from "./storage/storage";
+import { readToken, readIdUser, readId , readSupplierId } from "./storage/storage";
+// expo add expo-file-system expo-sharing xlsx
 import * as XLSX from "xlsx";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
@@ -51,7 +52,7 @@ export default function DevolucionScreen({
   const [idDevolution, setIdDevolution] = useState();
   const [idHistoryInventories, setIdHistoryInventories] = useState();
   const [action, setAction] = useState(false);
- 
+  
   //Estilos
   const styles = StyleSheet.create({
     viewTotal: {
@@ -152,7 +153,21 @@ export default function DevolucionScreen({
       .catch((error: any) => {
         console.log(error);
       });
+      return data;
   }
+
+  async function getSupplierId() {
+    let result = await readSupplierId().then((value: any) => {
+      setSupplierId(value);
+    })
+    .catch((error: any) => {
+        console.log(error);
+      });
+
+    return result;
+  }
+
+
   ////Funcion para listar ordenes de un usuario //////
   const getOrders = async (params: any) => {
     try {
@@ -167,7 +182,7 @@ export default function DevolucionScreen({
           user_id: get_user_id,
           filter_by: "GUIA",
           value_filter_by: params,
-          //supplier_id: 2,
+          supplier_id: supplierId,
         }),
       });
 
@@ -350,6 +365,7 @@ export default function DevolucionScreen({
   useEffect(() => {
     tokenUser();
     getIdUser();
+    getSupplierId();
   }, []);
 
   /////Renderizado en primera instancia arreglo de productos//////
@@ -717,6 +733,7 @@ export default function DevolucionScreen({
             keyExtractor={({ id }) => id}
             renderItem={({ item, index }) => {
               return (
+                <React.Fragment key={item["id_order"]}>
                 <View
                   style={{
                     flexDirection: "row",
@@ -731,11 +748,10 @@ export default function DevolucionScreen({
                     alignContent: "center",
                     alignItems: "center",
                   }}
-                  key={item["id"]}
+          
                 >
                   <View
-                    style={{ width: "10%", alignItems: "center" }}
-                    key={item["id"]}
+                    style={{ width: "10%", alignItems: "center" }} 
                   >
                     <Text
                       style={
@@ -835,6 +851,7 @@ export default function DevolucionScreen({
                     </TouchableOpacity>
                   </View>
                 </View>
+                </React.Fragment>
               );
             }}
           ></FlatList>

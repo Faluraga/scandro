@@ -3,8 +3,10 @@ import React, { useState } from 'react'
 import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 import IconEye from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { saveToken, saveIdUser } from './storage/storage';
 import * as rutas from './routes/routes';
+import { saveToken , saveIdUser, saveSupplierId, readSupplierId } from './storage/storage';
+import * as SecureStore from 'expo-secure-store';
+
 
 
 export default function Login({ navigation, route }: { navigation: any, route: any })
@@ -123,7 +125,9 @@ export default function Login({ navigation, route }: { navigation: any, route: a
     }
 
     ///Funcion de login 
+
     async function login()
+
     {
 
         try
