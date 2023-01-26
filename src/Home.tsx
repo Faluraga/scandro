@@ -28,6 +28,8 @@ import Modal from "react-native-modal";
 import ModalInfo from "./components/ModalInfo";
 import BotonModal from "./components/BotonModal"
 import Login from "./Login";
+import {useDispatch , useSelector }from 'react-redux'
+import { incrementByAmount, varSlice ,resetByAmount } from "./redux/slices/variableGlobal";
 
 const Home = ({ navigation, route }: { navigation: any; route: any }) =>
 {
@@ -44,6 +46,17 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
   const [menuBar, setMenuBar] = useState(["Configuración", "notificaciones"]);
   const [cosa, setCosa] = useState(false);
 
+  var variableGlobal = useSelector((state:any)=>state.counter.value)
+  const dispatch = useDispatch()
+
+  const incrementValue = () => {
+    dispatch(incrementByAmount('francisco'));
+  };
+
+  const resetValue = () => {
+    dispatch(resetByAmount(''))};
+  
+  console.log('ESTA ES REDUX=>',variableGlobal);
 
   var urlBaseDevelomentLogout =
     "https://b231-179-32-16-224.ngrok.io/api/logout";
@@ -398,7 +411,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => navigation.navigate("Salidas")}
+                onPress={() => incrementValue()}
                 style={styles.btn_salidas}
               >
                 <Image
