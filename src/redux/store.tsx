@@ -6,7 +6,7 @@ import varSlice  from './slices/variableGlobal'
 
 export const store = configureStore({
   reducer: {
-   counter: varSlice
+   var1: varSlice
   }
 })
 

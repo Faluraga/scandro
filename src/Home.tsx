@@ -29,7 +29,9 @@ import ModalInfo from "./components/ModalInfo";
 import BotonModal from "./components/BotonModal"
 import Login from "./Login";
 import {useDispatch , useSelector }from 'react-redux'
-import { incrementByAmount, varSlice ,resetByAmount } from "./redux/slices/variableGlobal";
+import { changeVariable,resetByAmount } from "./redux/slices/variableGlobal";
+import * as rutas from './routes/routes'
+
 
 const Home = ({ navigation, route }: { navigation: any; route: any }) =>
 {
@@ -46,20 +48,17 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
   const [menuBar, setMenuBar] = useState(["Configuración", "notificaciones"]);
   const [cosa, setCosa] = useState(false);
 
-  var variableGlobal = useSelector((state:any)=>state.counter.value)
+  var variableGlobal = useSelector((state:any)=>state.var1.value)
   const dispatch = useDispatch()
 
   const incrementValue = () => {
-    dispatch(incrementByAmount('francisco'));
+    dispatch(changeVariable('francisco'));
   };
 
   const resetValue = () => {
     dispatch(resetByAmount(''))};
   
   console.log('ESTA ES REDUX=>',variableGlobal);
-
-  var urlBaseDevelomentLogout =
-    "https://b231-179-32-16-224.ngrok.io/api/logout";
 
   /////Estilos//////
   const styles = StyleSheet.create({
@@ -206,7 +205,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
     try
     {
       console.log('funcion ejecutada');
-      var response = await fetch(urlBaseDevelomentLogout, {
+      var response = await fetch(rutas.urlBaseDevelomentLogout, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

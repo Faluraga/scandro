@@ -21,7 +21,7 @@ import { readToken, readIdUser, readId , readSupplierId } from "./storage/storag
 import * as XLSX from "xlsx";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import * as SecureStore from "expo-secure-store";
+import * as rutas from './routes/routes'
 
 export default function DevolucionScreen({
   navigation,
@@ -52,16 +52,7 @@ export default function DevolucionScreen({
   const [idDevolution, setIdDevolution] = useState();
   const [idHistoryInventories, setIdHistoryInventories] = useState();
   const [action, setAction] = useState(false);
-  const [supplierId,setSupplierId] = useState();
-  var urlBaseDevelomentOrders =
-    "https://b231-179-32-16-224.ngrok.io/api/orders/getmyorders";
-  var urlBaseDevelomentProducts =
-    "https://b231-179-32-16-224.ngrok.io/api/products";
-  var urlBaseDevelomentDevolutions =
-    "https://b231-179-32-16-224.ngrok.io/api/devolution/create";
-  var urlBaseDevelomentHistoryDevolutions =
-    "https://b231-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution";
-
+  
   //Estilos
   const styles = StyleSheet.create({
     viewTotal: {
@@ -176,15 +167,11 @@ export default function DevolucionScreen({
     return result;
   }
 
-  
-
-  
-  
 
   ////Funcion para listar ordenes de un usuario //////
   const getOrders = async (params: any) => {
     try {
-      var response = await fetch(urlBaseDevelomentOrders, {
+      var response = await fetch(rutas.urlBaseDevelomentOrders, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -258,7 +245,7 @@ export default function DevolucionScreen({
     try {
       (async () => {
         var response = await fetch(
-          `${urlBaseDevelomentProducts}/${id_product}`,
+          `${rutas.urlBaseDevelomentProducts}/${id_product}`,
           {
             method: "PUT",
             headers: {
@@ -313,7 +300,7 @@ export default function DevolucionScreen({
   const devolution = async () => {
     try {
       (async () => {
-        var devolucion = await fetch(urlBaseDevelomentDevolutions, {
+        var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -344,7 +331,7 @@ export default function DevolucionScreen({
   ) => {
     try {
       (async () => {
-        var response = await fetch(urlBaseDevelomentHistoryDevolutions, {
+        var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
