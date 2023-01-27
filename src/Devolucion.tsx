@@ -22,7 +22,8 @@ import { readToken, readIdUser, readId, readSupplierId } from "./storage/storage
 import * as XLSX from "xlsx";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import * as rutas from './routes/routes'
+import * as rutas from './routes/routes';
+import ModalInfo from "./components/ModalInfo";
 
 export default function DevolucionScreen({
   navigation,
@@ -55,6 +56,8 @@ export default function DevolucionScreen({
   const [idHistoryInventories, setIdHistoryInventories] = useState();
   const [action, setAction] = useState(false);
   const [supplierId, setSupplierId] = useState();
+  const [visibleModalInfo, setVisibleModalInfo] = useState(false);
+  const [modalInfo, setModalInfo] = useState("")
 
 
   //Estilos
@@ -160,7 +163,8 @@ export default function DevolucionScreen({
       .then((value: any) =>
       {
         let secureStoreVariable = parseInt(value);
-
+        console.log(value);
+        
         setGet_User_Id(value);
       })
       .catch((error: any) =>
@@ -174,6 +178,8 @@ export default function DevolucionScreen({
   {
     let result = await readSupplierId().then((value: any) =>
     {
+      console.log(value);
+      
       setSupplierId(value);
     })
       .catch((error: any) =>
@@ -190,11 +196,11 @@ export default function DevolucionScreen({
   {
     try
     {
-      var response = await fetch(rutas.urlBaseDevelomentOrders, {
+      var response = await fetch(rutas.urlBaseTestOrders, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json, text/plain, */*', 
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -251,7 +257,11 @@ export default function DevolucionScreen({
     } catch (e)
     {
       console.log("ERROR :", e);
-      alert("ESTA GUIA NO TE PERTENECE");
+      setVisibleModalInfo(true);
+      setModalInfo(`GUIA #${params} NO ENCONTRADA`);
+     
+        alert(`GUIA #${params} NO ENCONTRADA`);
+  
     }
   };
 
@@ -269,7 +279,7 @@ export default function DevolucionScreen({
       (async () =>
       {
         var response = await fetch(
-          `${rutas.urlBaseDevelomentProducts}/${id_product}`,
+          `${rutas.urlBaseTestProducts}/${id_product}`,
           {
             method: "PUT",
             headers: {
@@ -279,7 +289,7 @@ export default function DevolucionScreen({
             },
             body: JSON.stringify({
               active: true,
-              supplier_id: 2,
+              supplier_id: supplierId,
               id: id_product,
               add_stock_in_return: true,
               stock: stock_update,
@@ -310,9 +320,11 @@ export default function DevolucionScreen({
           if (action === false)
           {
             await devolution();
+            operationsDevolutions(id_history_inventories);
+
           } else if (action === true)
           {
-            operationsDevoltions(id_history_inventories);
+            operationsDevolutions(id_history_inventories);
           }
         } else if (res.isSuccess === false)
         {
@@ -332,7 +344,7 @@ export default function DevolucionScreen({
     {
       (async () =>
       {
-        var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
+        var devolucion = await fetch(rutas.urlBaseTestDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -368,7 +380,7 @@ export default function DevolucionScreen({
     {
       (async () =>
       {
-        var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
+        var response = await fetch(rutas.urlBaseTestHistoryDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -389,7 +401,7 @@ export default function DevolucionScreen({
     }
   };
 
-  const operationsDevoltions = (idHInventory: any) =>
+  const operationsDevolutions = (idHInventory: any) =>
   {
     if (action === true)
     {
@@ -452,6 +464,8 @@ export default function DevolucionScreen({
     data: string;
   }) =>
   {
+    console.log('#GUIA=>', data);
+    
     try
     {
       var guia = data;
@@ -762,6 +776,7 @@ export default function DevolucionScreen({
         )}
 
         {/* /////Cajón de productos//////// */}
+        
         <View
           style={{
             paddingBottom: 2,
@@ -809,7 +824,7 @@ export default function DevolucionScreen({
             renderItem={({ item, index }) =>
             {
               return (
-                <React.Fragment key={item["id_order"]}>
+               
                   <View
                     style={{
                       flexDirection: "row",
@@ -824,7 +839,7 @@ export default function DevolucionScreen({
                       alignContent: "center",
                       alignItems: "center",
                     }}
-
+                    key={item['order_id']}
                   >
                     <View
                       style={{ width: "10%", alignItems: "center" }}
@@ -839,7 +854,7 @@ export default function DevolucionScreen({
                         }
                       >
                         {" "}
-                        {item["id_order"]}{" "}
+                        {index + 1 }
                       </Text>
                     </View>
                     <View style={{ width: "60%", alignItems: "center" }}>
@@ -927,7 +942,7 @@ export default function DevolucionScreen({
                       </TouchableOpacity>
                     </View>
                   </View>
-                </React.Fragment>
+                
               );
             }}
           ></FlatList>

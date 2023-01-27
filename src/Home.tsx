@@ -202,7 +202,9 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
 
   const sesionClose = async () =>
   {
-
+    saveToken("");
+    saveIdUser("");
+    saveSupplierId("")
     try
     { 
       var response = await fetch(rutas.urlBaseDevelomentLogout, {
@@ -221,7 +223,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         saveToken("");
         saveIdUser("");
         saveSupplierId("")
-        // setMessageModal("Sesión cerrada exitosamente");
+        
         setVisibleModalInfo(true);
         setTimeout(() =>
         {
@@ -235,7 +237,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
 
         }, 800);
 
-
+        console.log('Sesion close');  
       } else if (res.isSuccess === false && res.status === 400)
       {
         alert(
