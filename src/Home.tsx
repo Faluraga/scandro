@@ -207,7 +207,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
     saveSupplierId("")
     try
     { 
-      var response = await fetch(rutas.urlBaseDevelomentLogout, {
+      var response = await fetch(rutas.urlBaseTestLogout, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -231,12 +231,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         }, 800)
 
         setVisibleModal(false);
-        setTimeout(() =>
-        {
-          setVisibleModal(false)
-
-        }, 800);
-
+       
         console.log('Sesion close');  
       } else if (res.isSuccess === false && res.status === 400)
       {

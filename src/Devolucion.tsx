@@ -212,9 +212,11 @@ export default function DevolucionScreen({
       });
 
       var res = await response.json();
-
+      
+      
       if (res.isSuccess == true && res.status == 200)
       {
+        
         const id_order: number = parseInt(res.objects[0].id);
         const id_user: number = parseInt(res.objects[0].user_id);
         const id_product: number = parseInt(
@@ -230,7 +232,7 @@ export default function DevolucionScreen({
         const name_warehouse: string = res.objects[0].warehouse.name;
         const stock_update: number = parseInt(stock_previous + quantity);
 
-        //////LLenado de estados /////
+        ////LLenado de estados /////
         setIdOrder(id_order);
         setIdUser(id_user);
         setIdProduct(id_product);
@@ -254,6 +256,7 @@ export default function DevolucionScreen({
           })
         );
       }
+      
     } catch (e)
     {
       console.log("ERROR :", e);
@@ -461,14 +464,20 @@ export default function DevolucionScreen({
     data,
   }: {
     type: any;
-    data: string;
+    data: String;
   }) =>
   {
-    console.log('#GUIA=>', data);
+    console.log('DATAGUIA=>',data);
+    
+    let guideTemp = data.charAt(0);
+    if (guideTemp === "7" ) {
+      data = data.slice(18,data.length - 3)
+    }
+    console.log('DATANEW',data);
     
     try
     {
-      var guia = data;
+      
       if (
         data != "" &&
         arrayProducts.map((e) => e["guide"]).includes(data) !== true
@@ -530,7 +539,7 @@ export default function DevolucionScreen({
     warehouse: any,
     quantity: any
   )
-  {
+  {    
     (async () =>
     {
       await updateStock(
