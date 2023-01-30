@@ -21,7 +21,10 @@
     "ios": {
       "supportsTablet": true
     },
-    "android": {
+    "android":{
+      "package": "com.scandro.appscandro",
+      "versionCode":1.0,
+      
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F38D03"
