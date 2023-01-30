@@ -1,19 +1,19 @@
 //Importaciones
 import React, { useState, useEffect, useRef } from "react";
 import
-  {
-    StyleSheet,
-    Text,
-    View,
-    ImageBackground,
-    TouchableOpacity,
-    Image,
-    Button,
-    FlatList,
-  } from "react-native";
+{
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  TouchableOpacity,
+  Image,
+  Button,
+  FlatList,
+} from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { Divider } from "react-native-paper";
+import { Divider, TextInput } from "react-native-paper";
 import IconBar from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Animatable from "react-native-animatable";
 import LottieView from "lottie-react-native";
@@ -58,6 +58,7 @@ export default function DevolucionScreen({
   const [supplierId, setSupplierId] = useState();
   const [visibleModalInfo, setVisibleModalInfo] = useState(false);
   const [modalInfo, setModalInfo] = useState("")
+  const [guideSelection, setGuideSelection] = useState(Number)
 
 
   //Estilos
@@ -162,9 +163,6 @@ export default function DevolucionScreen({
     data
       .then((value: any) =>
       {
-        let secureStoreVariable = parseInt(value);
-        console.log(value);
-        
         setGet_User_Id(value);
       })
       .catch((error: any) =>
@@ -178,7 +176,6 @@ export default function DevolucionScreen({
   {
     let result = await readSupplierId().then((value: any) =>
     {
-      console.log(value);
       
       setSupplierId(value);
     })
@@ -194,13 +191,16 @@ export default function DevolucionScreen({
   ////Funcion para listar ordenes de un usuario //////
   const getOrders = async (params: any) =>
   {
+    //console.log('NUMERO DE GUIA =>',params);
+
+  
     try
     {
       var response = await fetch(rutas.urlBaseTestOrders, {
         method: "POST",
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json, text/plain, */*', 
+          'Accept': 'application/json, text/plain, */*',
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -212,11 +212,11 @@ export default function DevolucionScreen({
       });
 
       var res = await response.json();
-      
-      
+
+
       if (res.isSuccess == true && res.status == 200)
       {
-        
+
         const id_order: number = parseInt(res.objects[0].id);
         const id_user: number = parseInt(res.objects[0].user_id);
         const id_product: number = parseInt(
@@ -256,15 +256,17 @@ export default function DevolucionScreen({
           })
         );
       }
-      
+
     } catch (e)
     {
       console.log("ERROR :", e);
       setVisibleModalInfo(true);
       setModalInfo(`GUIA #${params} NO ENCONTRADA`);
-     
-        alert(`GUIA #${params} NO ENCONTRADA`);
-  
+
+      //alert(`GUIA #${params} NO ENCONTRADA`);
+       setTimeout(() => {
+        setVisibleModalInfo(false);
+      }, 2000);
     }
   };
 
@@ -467,17 +469,18 @@ export default function DevolucionScreen({
     data: String;
   }) =>
   {
-    console.log('DATAGUIA=>',data);
-    
+    console.log('DATAGUIA=>', data.length);
+
     let guideTemp = data.charAt(0);
-    if (guideTemp === "7" ) {
-      data = data.slice(18,data.length - 3)
+    if (guideTemp === "7")
+    {
+      data = data.slice(18, data.length - 3)
     }
-    console.log('DATANEW',data);
-    
+    console.log('DATANEW', data);
+
     try
     {
-      
+
       if (
         data != "" &&
         arrayProducts.map((e) => e["guide"]).includes(data) !== true
@@ -539,7 +542,7 @@ export default function DevolucionScreen({
     warehouse: any,
     quantity: any
   )
-  {    
+  {
     (async () =>
     {
       await updateStock(
@@ -638,6 +641,7 @@ export default function DevolucionScreen({
         style={styles.fondo}
       >
         <View style={styles.containerBalance}>
+          <ModalInfo params={modalInfo} value={visibleModalInfo}/>
           <TouchableOpacity style={[styles.iconreturn]}>
             <FontAwesome5
               name="angle-double-left"
@@ -711,6 +715,23 @@ export default function DevolucionScreen({
                 />
               </Animatable.View>
             </View>
+            
+              <TextInput style={{
+                top: 25,
+                width: 250,
+                height: 50,
+                alignContent: 'center',
+                justifyContent: 'center',
+                alignSelf: 'center',
+                textAlign:'center',
+                backgroundColor: "white",
+
+
+              }} placeholder={'Digita numero de guia'}
+                placeholderTextColor="#CAC4D0"
+                keyboardType ='numeric' 
+                maxLength={20}
+                onSubmitEditing={(val:any)=>{getOrders(val.nativeEvent.text)}} />
 
             <View
               style={{
@@ -756,22 +777,22 @@ export default function DevolucionScreen({
                     borderRadius: 100,
                   }}
                 >
-                
+
                   <View>
-                  <Animatable.View
-                    animation="pulse"
-                    duration={1000}
-                    iterationCount={"infinite"}
-                  >
-                    <IconBar
-                      name="plus-circle"
-                      size={56}
-                      color="#0BA5F2"
-                      placeholder={"Agregar"}
-                    />
+                    <Animatable.View
+                      animation="pulse"
+                      duration={1000}
+                      iterationCount={"infinite"}
+                    >
+                      <IconBar
+                        name="plus-circle"
+                        size={56}
+                        color="#0BA5F2"
+                        placeholder={"Agregar"}
+                      />
                     </Animatable.View>
                   </View>
-                 
+
                 </TouchableOpacity>
               </View>
             </View>
@@ -785,14 +806,14 @@ export default function DevolucionScreen({
         )}
 
         {/* /////Cajón de productos//////// */}
-        
+
         <View
           style={{
             paddingBottom: 2,
             borderWidth: 1,
             top: 10,
             width: 350,
-            height: 420,
+            height: 370,
             borderRadius: 15,
             backgroundColor: "white",
             marginBottom: 100,
@@ -833,125 +854,125 @@ export default function DevolucionScreen({
             renderItem={({ item, index }) =>
             {
               return (
-               
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginTop: 15,
+                    margin: 3,
+                    backgroundColor:
+                      changeStatusView.filter((e) => e == index).length > 0
+                        ? "#52C254"
+                        : "white",
+                    borderRadius: 30,
+                    justifyContent: "center",
+                    alignContent: "center",
+                    alignItems: "center",
+                  }}
+                  key={item['order_id']}
+                >
+                  <View
+                    style={{ width: "10%", alignItems: "center" }}
+                  >
+                    <Text
+                      style={
+                        changeStatusView.filter((e) => e == index).length > 0
+                          ? { color: "white", fontWeight: "bold", fontSize: 15 }
+                          : { color: "black", fontWeight: null } && {
+                            fontSize: 15,
+                          }
+                      }
+                    >
+                      {" "}
+                      {index + 1}
+                    </Text>
+                  </View>
+                  <View style={{ width: "60%", alignItems: "center" }}>
+                    <Text
+                      style={
+                        changeStatusView.filter((e) => e == index).length > 0
+                          ? { color: "white", fontWeight: "bold", fontSize: 15 }
+                          : { color: "black", fontWeight: null } && {
+                            fontSize: 15,
+                          }
+                      }
+                    >
+                      {" "}
+                      {item["guide"]}{" "}
+                    </Text>
+                  </View>
                   <View
                     style={{
-                      flexDirection: "row",
-                      marginTop: 15,
-                      margin: 3,
-                      backgroundColor:
-                        changeStatusView.filter((e) => e == index).length > 0
-                          ? "#52C254"
-                          : "white",
-                      borderRadius: 30,
-                      justifyContent: "center",
-                      alignContent: "center",
+                      width: "15%",
                       alignItems: "center",
+                      display:
+                        changeStatusView.filter((e) => e == index).length > 0
+                          ? "none"
+                          : "flex",
                     }}
-                    key={item['order_id']}
                   >
-                    <View
-                      style={{ width: "10%", alignItems: "center" }}
-                    >
-                      <Text
-                        style={
-                          changeStatusView.filter((e) => e == index).length > 0
-                            ? { color: "white", fontWeight: "bold", fontSize: 15 }
-                            : { color: "black", fontWeight: null } && {
-                              fontSize: 15,
-                            }
-                        }
-                      >
-                        {" "}
-                        {index + 1 }
-                      </Text>
-                    </View>
-                    <View style={{ width: "60%", alignItems: "center" }}>
-                      <Text
-                        style={
-                          changeStatusView.filter((e) => e == index).length > 0
-                            ? { color: "white", fontWeight: "bold", fontSize: 15 }
-                            : { color: "black", fontWeight: null } && {
-                              fontSize: 15,
-                            }
-                        }
-                      >
-                        {" "}
-                        {item["guide"]}{" "}
-                      </Text>
-                    </View>
-                    <View
+                    <TouchableOpacity
                       style={{
-                        width: "15%",
+                        width: 32,
+                        height: 32,
                         alignItems: "center",
-                        display:
-                          changeStatusView.filter((e) => e == index).length > 0
-                            ? "none"
-                            : "flex",
+                        justifyContent: "center",
+                        //backgroundColor: "#52C254",
+                        borderRadius: 50,
                       }}
+                      onPress={() =>
+                        addStock(
+                          index,
+                          item["id_product"],
+                          item["stock_update"],
+                          item["id_warehouse"],
+                          item["quantity"]
+                        )
+                      }
                     >
-                      <TouchableOpacity
-                        style={{
-                          width: 32,
-                          height: 32,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          //backgroundColor: "#52C254",
-                          borderRadius: 50,
-                        }}
-                        onPress={() =>
-                          addStock(
-                            index,
-                            item["id_product"],
-                            item["stock_update"],
-                            item["id_warehouse"],
-                            item["quantity"]
-                          )
-                        }
-                      >
-                        <View>
-                          <IconBar
-                            name="briefcase-check"
-                            size={27}
-                            color="#52C254"
-                            placeholder={"Agregar"}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                    <View
-                      style={{
-                        width: "15%",
-                        alignItems: "center",
-                        display:
-                          changeStatusView.filter((e) => e == index).length > 0
-                            ? "none"
-                            : "flex",
-                      }}
-                    >
-                      <TouchableOpacity
-                        style={{
-                          width: 32,
-                          height: 32,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          //backgroundColor: "#F6505C",
-                          borderRadius: 50,
-                        }}
-                        onPress={() => deleteStock(index, item["guide"])}
-                      >
-                        <View>
-                          <IconBar
-                            name="delete-forever"
-                            size={30}
-                            color="#F6505C"
-                            placeholder={"Eliminar"}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    </View>
+                      <View>
+                        <IconBar
+                          name="briefcase-check"
+                          size={27}
+                          color="#52C254"
+                          placeholder={"Agregar"}
+                        />
+                      </View>
+                    </TouchableOpacity>
                   </View>
-                
+                  <View
+                    style={{
+                      width: "15%",
+                      alignItems: "center",
+                      display:
+                        changeStatusView.filter((e) => e == index).length > 0
+                          ? "none"
+                          : "flex",
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={{
+                        width: 32,
+                        height: 32,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        //backgroundColor: "#F6505C",
+                        borderRadius: 50,
+                      }}
+                      onPress={() => deleteStock(index, item["guide"])}
+                    >
+                      <View>
+                        <IconBar
+                          name="delete-forever"
+                          size={30}
+                          color="#F6505C"
+                          placeholder={"Eliminar"}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
               );
             }}
           ></FlatList>

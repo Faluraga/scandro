@@ -155,14 +155,11 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                         const status = "login"
                         var DropiToken = resData.token;
                         var idUser = resData.objects.id;
-                        console.log('ID user', idUser);
-                        
-                    
+                   
                         if (resData.objects.roleNames[0] === "LOGISTIC") { 
                            
                             var supplierId = JSON.stringify(resData.objects.logistic_user_provider[0].supplier_id)
-                            console.log('SUPPILER_ID=>',supplierId);
-                            
+                          
                             saveSupplierId(supplierId)
                         };
 

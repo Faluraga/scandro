@@ -227,7 +227,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         setVisibleModalInfo(true);
         setTimeout(() =>
         {
-          navigation.navigate('Inicio');
+          navigation.navigate("Inicio");
         }, 800)
 
         setVisibleModal(false);
@@ -241,13 +241,14 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         saveToken("");
         saveIdUser("");
         saveSupplierId("")
-        navigation.navigate('Inicio');
+        navigation.navigate("Inicio");
       }
       console.log(res);
     } catch (e)
     {
       console.log("ERROR :", e);
       //alert(e)
+      navigation.navigate("Inicio");
       saveToken("");
       saveIdUser("");
       saveSupplierId("")

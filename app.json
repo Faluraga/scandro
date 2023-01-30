@@ -5,12 +5,12 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/img/dropiSettings.png",
-    "backgroundColor": "orange",
+    "backgroundColor": "#F38D03",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/img/dropiWhite.png",
+      "image": "./assets/img/dropiSettings.png",
       "resizeMode": "contain",
-      "backgroundColor": "orange"
+      "backgroundColor": "#F38D03"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -24,9 +24,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "orange"
-      },
-      "android":{"package": "com.faluradev.scandro","versionCode": "1.0.0"}
+        "backgroundColor": "#F38D03"
+      }
     },
     "web": {
       "favicon": "./assets/img/dropiSettings.png"
