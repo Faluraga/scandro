@@ -21,7 +21,7 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
 
   const Stack = createNativeStackNavigator();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [token, setToken] = React.useState('');
+  const [token, setToken] = useState('');
 
 
   /// Metodo para leer el token del usuario logueado , desde el local-storage
@@ -32,7 +32,7 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
     data.then((value: any) =>
     {
       setToken(value);
-      //console.log('TOKEN_INICIAL=>', token);
+      console.log('TOKEN_INICIAL=>', token);
 
 
     }).catch((error: any) =>
@@ -51,7 +51,7 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
 
     <Provider store={store}>
     <NavigationContainer>
-      {token !== "" ?
+      {token !== "" && token !== undefined ?
         <Stack.Navigator>
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
