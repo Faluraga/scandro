@@ -32,9 +32,7 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
     data.then((value: any) =>
     {
       setToken(value);
-      console.log('TOKEN_INICIAL=>', token);
-
-
+     
     }).catch((error: any) =>
     {
       console.log(error);
@@ -51,12 +49,12 @@ const App = ({ navigation, route }: { navigation: any, route: any }) =>
 
     <Provider store={store}>
     <NavigationContainer>
-      {token !== "" && token !== undefined ?
+      {token !== "" && token !== undefined  && token !== null && token.length !== 0 ?
         <Stack.Navigator>
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
           <Stack.Screen name="Devolucion" component={Devolucion} options={{ headerShown: false }} />
           <Stack.Screen name="Salidas" component={Salidas} options={{ headerShown: false }} />
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
         </Stack.Navigator> :
          <Stack.Navigator>
          <Stack.Screen name="Inicio" component={Inicio} options={{ headerShown: false }} />

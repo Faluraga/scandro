@@ -10,6 +10,7 @@ import
   Image,
   Button,
   FlatList,
+  BackHandler,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -122,6 +123,8 @@ export default function DevolucionScreen({
       backgroundColor: "white",
     },
   });
+
+
 
   const onRefresh = React.useCallback(() =>
   {

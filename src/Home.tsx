@@ -11,6 +11,7 @@ import
     ScrollView,
     Image,
     Button,
+    BackHandler,
   } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Menu, Divider, Provider } from "react-native-paper";
@@ -27,13 +28,12 @@ import Inicio from "./Inicio";
 import Modal from "react-native-modal";
 import ModalInfo from "./components/ModalInfo";
 import BotonModal from "./components/BotonModal"
-import Login from "./Login";
 import {useDispatch , useSelector }from 'react-redux'
 import { changeVariable,resetByAmount } from "./redux/slices/variableGlobal";
 import * as rutas from './routes/routes'
 
 
-const Home = ({ navigation, route }: { navigation: any; route: any }) =>
+export default function Home ({ navigation, route }: { navigation: any; route: any })
 {
   /////Estados/////
   const [visibleCodeBar, setVisibleCodeBar] = useState(true);
@@ -170,6 +170,17 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
     },
   });
 
+
+  ////Deshabilitar retroceso de pantalla /////
+  useEffect(() =>{
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress", 
+      ()=>true 
+      ); 
+      return () => backHandler.remove();
+  },[]);
+
   useEffect(() =>
   {
     tokenUser();
@@ -227,7 +238,7 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         setVisibleModalInfo(true);
         setTimeout(() =>
         {
-          navigation.navigate("Inicio");
+          navigation.navigate("Login");
         }, 800)
 
         setVisibleModal(false);
@@ -241,14 +252,14 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
         saveToken("");
         saveIdUser("");
         saveSupplierId("")
-        navigation.navigate("Inicio");
+        navigation.navigate("Login");
       }
       console.log(res);
     } catch (e)
     {
       console.log("ERROR :", e);
       //alert(e)
-      navigation.navigate("Inicio");
+      navigation.navigate("Login");
       saveToken("");
       saveIdUser("");
       saveSupplierId("")
@@ -428,4 +439,4 @@ const Home = ({ navigation, route }: { navigation: any; route: any }) =>
   );
 };
 
-export default Home;
+

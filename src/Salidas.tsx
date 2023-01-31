@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 export default function Salidas({ navigation, route }: { navigation: any, route: any })
 {
 
-    //Front de Balance
+  
     return (
         <View style={styles.view}>
             <ImageBackground source={require('../Img/IMAGEN-1.jpg')} style={styles.fondo}>
