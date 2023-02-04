@@ -11,6 +11,7 @@ import
   Button,
   FlatList,
   BackHandler,
+
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BarCodeScanner } from "expo-barcode-scanner";
@@ -25,6 +26,12 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as rutas from './routes/routes';
 import ModalInfo from "./components/ModalInfo";
+import Modal from "react-native-modal";
+import RadioGroup from 'react-native-radio-buttons-group';
+import ModalConfirmation from "./components/ModalConfirm";
+import { useDispatch, useSelector } from "react-redux";
+import { changeModalVisibility } from "./redux/slices/modal";
+import { changeGuide } from "./redux/slices/guide";
 
 export default function DevolucionScreen({
   navigation,
@@ -42,7 +49,6 @@ export default function DevolucionScreen({
   const [idUser, setIdUser] = useState(0);
   const [get_user_id, setGet_User_Id] = useState(Number);
   const [idOrder, setIdOrder] = useState(0);
-  const [nameProduct, setNameProduct] = useState();
   const [guide, setGuide] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [visibleCodeBar, setVisibleCodeBar] = useState(false);
@@ -52,15 +58,34 @@ export default function DevolucionScreen({
   const [quantity, setQuantity] = useState(0);
   const [stockPrevious, setStockPrevious] = useState(0);
   const [idWarehouse, setIdWarehouse] = useState(0);
-  const [enableButtonExcel, setEnableButtonExcel] = useState(false);
   const [idDevolution, setIdDevolution] = useState();
   const [idHistoryInventories, setIdHistoryInventories] = useState();
   const [action, setAction] = useState(false);
   const [supplierId, setSupplierId] = useState();
   const [visibleModalInfo, setVisibleModalInfo] = useState(false);
-  const [modalInfo, setModalInfo] = useState("")
-  const [guideSelection, setGuideSelection] = useState(Number)
+  const [modalInfo, setModalInfo] = useState("");
+  const [guideSelection, setGuideSelection] = useState(Number);
+  const [visibleModal, setVisibleModal] = useState(false);
+  const [stateCheck, setStateCheck] = useState(false);
 
+
+  var isModalVisible = useSelector((state:any)=>state.modal.visible);
+  var guideCurrent = useSelector((state:any)=>state.guide.visible);
+
+
+  const dispatch = useDispatch();
+
+  const toggleModal = (visible:boolean) => {
+    dispatch(changeModalVisibility(visible));
+  };
+
+  const GuideSelection = (params:object) => {
+    dispatch(changeGuide(params))
+  };
+    
+
+
+  const [products, setProducts] = useState([]);
 
   //Estilos
   const styles = StyleSheet.create({
@@ -179,7 +204,7 @@ export default function DevolucionScreen({
   {
     let result = await readSupplierId().then((value: any) =>
     {
-      
+
       setSupplierId(value);
     })
       .catch((error: any) =>
@@ -194,12 +219,10 @@ export default function DevolucionScreen({
   ////Funcion para listar ordenes de un usuario //////
   const getOrders = async (params: any) =>
   {
-    //console.log('NUMERO DE GUIA =>',params);
 
-  
     try
     {
-      var response = await fetch(rutas.urlBaseTestOrders, {
+      var response = await fetch(rutas.urlBaseDevelomentOrders, {
         method: "POST",
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -215,17 +238,38 @@ export default function DevolucionScreen({
       });
 
       var res = await response.json();
-
-
+  
       if (res.isSuccess == true && res.status == 200)
       {
+
 
         const id_order: number = parseInt(res.objects[0].id);
         const id_user: number = parseInt(res.objects[0].user_id);
         const id_product: number = parseInt(
           res.objects[0].orderdetails[0].product.id
         );
-        const name_product = res.objects[0].orderdetails[0].product.name;
+
+        const name_product: [] = res.objects[0].orderdetails
+        type DataProduct = {
+          id: number,
+          label: String,
+          value: String,
+          isChecked: boolean,
+        }
+        let newProduct: DataProduct[] = [];
+        name_product.forEach(element =>
+        {
+          const tempDataProduct: DataProduct = {
+            id: element['product']['id'],
+            isChecked: false,
+            label: element['product']['name'],
+            value: element['quantity'],
+          }
+          
+          newProduct.push(tempDataProduct)
+        });
+        // setProducts(newProduct);
+
         const guide: any = res.objects[0].shipping_guide;
         const stock_previous: any = parseInt(
           res.objects[0].orderdetails[0].product.stock
@@ -253,9 +297,9 @@ export default function DevolucionScreen({
             quantity: quantity,
             stock_previous: stock_previous,
             stock_update: stock_update,
-            name_product: name_product,
             name_warehouse: name_warehouse,
             guide: guide,
+            products: newProduct
           })
         );
       }
@@ -267,7 +311,8 @@ export default function DevolucionScreen({
       setModalInfo(`GUIA #${params} NO ENCONTRADA`);
 
       //alert(`GUIA #${params} NO ENCONTRADA`);
-       setTimeout(() => {
+      setTimeout(() =>
+      {
         setVisibleModalInfo(false);
       }, 2000);
     }
@@ -284,61 +329,60 @@ export default function DevolucionScreen({
   {
     try
     {
-      (async () =>
-      {
-        var response = await fetch(
-          `${rutas.urlBaseTestProducts}/${id_product}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              active: true,
-              supplier_id: supplierId,
-              id: id_product,
-              add_stock_in_return: true,
-              stock: stock_update,
-              user_id: get_user_id,
-              warehouselected: warehouse,
-              type: "SIMPLE",
-              historyInventories: [
-                {
-                  concept: "Devoluciones-App-" + new Date().toLocaleDateString(),
-                  type_movement: "ENTRADA",
-                  quantity: quantity,
-                  variation_id: null,
-                },
-              ],
-            }),
-          }
-        );
 
-        var res = await response.json();
-
-        if (res.isSuccess == true && res.status == 200)
+      var response = await fetch(
+        `${rutas.urlBaseDevelomentProducts}/${id_product}`,
         {
-          alert(res.message);
-          var id_history_inventories = res.objects.id;
-
-          setIdHistoryInventories(id_history_inventories);
-          setChangeStatusView((current) => current.concat(index));
-          if (action === false)
-          {
-            await devolution();
-            operationsDevolutions(id_history_inventories);
-
-          } else if (action === true)
-          {
-            operationsDevolutions(id_history_inventories);
-          }
-        } else if (res.isSuccess === false)
-        {
-          alert(res.message);
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            active: true,
+            supplier_id: supplierId,
+            id: id_product,
+            add_stock_in_return: true,
+            stock: stock_update,
+            user_id: get_user_id,
+            warehouselected: warehouse,
+            type: "SIMPLE",
+            historyInventories: [
+              {
+                concept: "Devoluciones-App-" + new Date().toLocaleDateString(),
+                type_movement: "ENTRADA",
+                quantity: quantity,
+                variation_id: null,
+              },
+            ],
+          }),
         }
-      })();
+      );
+
+      var res = await response.json();
+
+      if (res.isSuccess == true && res.status == 200)
+      {
+        alert(res.message);
+        var id_history_inventories = res.objects.id;
+
+        setIdHistoryInventories(id_history_inventories);
+        setChangeStatusView((current) => current.concat(index));
+        if (action === false)
+        {
+          await devolution();
+          operationsDevolutions(id_history_inventories);
+
+        } else if (action === true)
+        {
+          operationsDevolutions(id_history_inventories);
+        }
+      } else if (res.isSuccess === false)
+      {
+        alert(res.message);
+      }
+
     } catch (e)
     {
       console.log("ERROR =>", e);
@@ -352,7 +396,7 @@ export default function DevolucionScreen({
     {
       (async () =>
       {
-        var devolucion = await fetch(rutas.urlBaseTestDevolutions, {
+        var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -388,7 +432,7 @@ export default function DevolucionScreen({
     {
       (async () =>
       {
-        var response = await fetch(rutas.urlBaseTestHistoryDevolutions, {
+        var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -419,6 +463,13 @@ export default function DevolucionScreen({
 
   useEffect(() =>
   {
+   
+   setArrayProducts(arrayProducts)
+  }, [arrayProducts]);
+
+
+  useEffect(() =>
+  {
     historyDevolutions(idDevolution, idHistoryInventories);
   }, [action]);
 
@@ -431,10 +482,12 @@ export default function DevolucionScreen({
   }, []);
 
   /////Renderizado en primera instancia arreglo de productos//////
-  useEffect(() =>
-  {
-    setArrayProducts(arrayProducts);
-  }, [arrayProducts]);
+  // useEffect(() =>
+  // {
+  //   setArrayProducts(arrayProducts);
+  //   console.log(arrayProducts);
+
+  // }, [arrayProducts]);
 
   //// Request Camera Permission /////
   useEffect(() =>
@@ -472,15 +525,11 @@ export default function DevolucionScreen({
     data: String;
   }) =>
   {
-    console.log('DATAGUIA=>', data.length);
-
     let guideTemp = data.charAt(0);
     if (guideTemp === "7")
     {
       data = data.slice(18, data.length - 3)
     }
-    console.log('DATANEW', data);
-
     try
     {
 
@@ -539,32 +588,35 @@ export default function DevolucionScreen({
 
   ///Añadir al stock///
   async function addStock(
-    index: any,
-    id_product: any,
-    stock_update: any,
-    warehouse: any,
-    quantity: any
+    item: object
+    // index: number,
+    // item: any
+    // id_product: any,
+    // stock_update: any,
+    // warehouse: any,
+    // quantity: any
   )
   {
-    (async () =>
-    {
-      await updateStock(
-        index,
-        id_product,
-        stock_update,
-        warehouse,
-        quantity
-      ).then(() =>
-      {
-        setEnableButtonExcel(true);
-      });
-    })();
+    toggleModal(true);
+    GuideSelection(item)
+  
+    // (async () =>
+    // {
+    //   await updateStock(
+    //     index,
+    //     id_product,
+    //     stock_update,
+    //     warehouse,
+    //     quantity
+    //   )
+    // })();
   }
 
   ///Eliminar producto de la lista ///
   async function deleteStock(index: any, guide: any)
   {
     const indice = arrayProducts.map((e) => e["guide"]).indexOf(guide);
+  
     arrayProducts.splice(indice, 1);
     onRefresh();
     setArrayProducts(arrayProducts);
@@ -644,7 +696,9 @@ export default function DevolucionScreen({
         style={styles.fondo}
       >
         <View style={styles.containerBalance}>
-          <ModalInfo params={modalInfo} value={visibleModalInfo}/>
+
+          <ModalInfo params={modalInfo} value={visibleModalInfo} />
+
           <TouchableOpacity style={[styles.iconreturn]}>
             <FontAwesome5
               name="angle-double-left"
@@ -718,23 +772,23 @@ export default function DevolucionScreen({
                 />
               </Animatable.View>
             </View>
-            
-              <TextInput style={{
-                top: 25,
-                width: 250,
-                height: 50,
-                alignContent: 'center',
-                justifyContent: 'center',
-                alignSelf: 'center',
-                textAlign:'center',
-                backgroundColor: "white",
+
+            <TextInput style={{
+              top: 25,
+              width: 250,
+              height: 50,
+              alignContent: 'center',
+              justifyContent: 'center',
+              alignSelf: 'center',
+              textAlign: 'center',
+              backgroundColor: "white",
 
 
-              }} placeholder={'Digita numero de guia'}
-                placeholderTextColor="#CAC4D0"
-                keyboardType ='numeric' 
-                maxLength={20}
-                onSubmitEditing={(val:any)=>{getOrders(val.nativeEvent.text)}} />
+            }} placeholder={'Digita numero de guia'}
+              placeholderTextColor="#CAC4D0"
+              keyboardType='numeric'
+              maxLength={20}
+              onSubmitEditing={(val: any) => { getOrders(val.nativeEvent.text) }} />
 
             <View
               style={{
@@ -902,6 +956,7 @@ export default function DevolucionScreen({
                     >
                       {" "}
                       {item["guide"]}{" "}
+
                     </Text>
                   </View>
                   <View
@@ -924,15 +979,10 @@ export default function DevolucionScreen({
                         borderRadius: 50,
                       }}
                       onPress={() =>
-                        addStock(
-                          index,
-                          item["id_product"],
-                          item["stock_update"],
-                          item["id_warehouse"],
-                          item["quantity"]
-                        )
+                        addStock(item)
                       }
                     >
+                      
                       <View>
                         <IconBar
                           name="briefcase-check"
@@ -974,11 +1024,12 @@ export default function DevolucionScreen({
                       </View>
                     </TouchableOpacity>
                   </View>
+              
                 </View>
-
               );
             }}
           ></FlatList>
+           <ModalConfirmation />
         </View>
       </ImageBackground>
     </View>

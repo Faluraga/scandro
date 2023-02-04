@@ -1,12 +1,12 @@
 
 
 ////Environments////
-export const urlBaseDevelomentLogin = 'https://b231-179-32-16-224.ngrok.io/api/login';
-export const urlBaseDevelomentLogout = "https://b231-179-32-16-224.ngrok.io/api/logout";
-export const urlBaseDevelomentOrders = "https://b231-179-32-16-224.ngrok.io/api/orders/getmyorders";
-export const urlBaseDevelomentProducts = "https://b231-179-32-16-224.ngrok.io/api/products";
-export const urlBaseDevelomentDevolutions = "https://b231-179-32-16-224.ngrok.io/api/devolution/create";
-export const urlBaseDevelomentHistoryDevolutions = "https://b231-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution";
+export const urlBaseDevelomentLogin = 'https://0cae-161-18-229-210.ngrok.io/api/login';
+export const urlBaseDevelomentLogout = "https://0cae-161-18-229-210.ngrok.io/api/logout";
+export const urlBaseDevelomentOrders = "https://0cae-161-18-229-210.ngrok.io/api/orders/getmyorders";
+export const urlBaseDevelomentProducts = "https://0cae-161-18-229-210.ngrok.io/api/products";
+export const urlBaseDevelomentDevolutions = "https://0cae-161-18-229-210.ngrok.io/api/devolution/create";
+export const urlBaseDevelomentHistoryDevolutions = "https://0cae-161-18-229-210.ngrok.io/api/devolution/createhistorydevolution";
 
 
 ////test-pruebas

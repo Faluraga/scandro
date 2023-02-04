@@ -218,7 +218,7 @@ export default function Home ({ navigation, route }: { navigation: any; route: a
     saveSupplierId("")
     try
     { 
-      var response = await fetch(rutas.urlBaseTestLogout, {
+      var response = await fetch(rutas.urlBaseDevelomentLogout, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -275,8 +275,8 @@ export default function Home ({ navigation, route }: { navigation: any; route: a
           animationIn="bounce"
           animationInTiming={1000}
           isVisible={visibleModal}
-          onBackdropPress={() => setVisible(!visibleModal)}
-          onSwipeComplete={() => setVisible(!visibleModal)}
+          onBackdropPress={() => setVisibleModal(!visibleModal)}
+          onSwipeComplete={() => setVisibleModal(!visibleModal)}
         //onSwipeCancel={() => setVisible(!visibleModal)}
 
         >

@@ -1,12 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
 import varSlice  from './slices/variableGlobal'
-
+import modalSlice  from './slices/modal'
+import  guideSlice  from './slices/guide'
 
 // ...
 
 export const store = configureStore({
   reducer: {
-   var1: varSlice
+   var1: varSlice,
+   modal: modalSlice,
+   guide:guideSlice 
   }
 })
 
