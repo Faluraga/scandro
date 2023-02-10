@@ -69,20 +69,22 @@ export default function DevolucionScreen({
   const [stateCheck, setStateCheck] = useState(false);
 
 
-  var isModalVisible = useSelector((state:any)=>state.modal.visible);
-  var guideCurrent = useSelector((state:any)=>state.guide.visible);
+  var isModalVisible = useSelector((state: any) => state.modal.visible);
+  var guideCurrent = useSelector((state: any) => state.guide.visible);
 
 
   const dispatch = useDispatch();
 
-  const toggleModal = (visible:boolean) => {
+  const toggleModal = (visible: boolean) =>
+  {
     dispatch(changeModalVisibility(visible));
   };
 
-  const GuideSelection = (params:object) => {
+  const GuideSelection = (params: object) =>
+  {
     dispatch(changeGuide(params))
   };
-    
+
 
 
   const [products, setProducts] = useState([]);
@@ -238,46 +240,93 @@ export default function DevolucionScreen({
       });
 
       var res = await response.json();
-  
+      //console.log('Productos ====>',res.objects[0].orderdetails[0].variation_id);
       if (res.isSuccess == true && res.status == 200)
       {
 
-
         const id_order: number = parseInt(res.objects[0].id);
         const id_user: number = parseInt(res.objects[0].user_id);
-        const id_product: number = parseInt(
-          res.objects[0].orderdetails[0].product.id
-        );
-
-        const name_product: [] = res.objects[0].orderdetails
-        type DataProduct = {
-          id: number,
-          label: String,
-          value: String,
-          isChecked: boolean,
-        }
-        let newProduct: DataProduct[] = [];
-        name_product.forEach(element =>
-        {
-          const tempDataProduct: DataProduct = {
-            id: element['product']['id'],
-            isChecked: false,
-            label: element['product']['name'],
-            value: element['quantity'],
-          }
-          
-          newProduct.push(tempDataProduct)
-        });
-        // setProducts(newProduct);
-
+        const id_product: number = parseInt(res.objects[0].orderdetails[0].product.id);
+        const name_product: [] = res.objects[0].orderdetails;
         const guide: any = res.objects[0].shipping_guide;
-        const stock_previous: any = parseInt(
-          res.objects[0].orderdetails[0].product.stock
-        );
+        const stock_previous: any = parseInt(res.objects[0].orderdetails[0].product.stock);
         const quantity: any = parseInt(res.objects[0].orderdetails[0].quantity);
         const id_warehouse: number = parseInt(res.objects[0].warehouse_id);
         const name_warehouse: string = res.objects[0].warehouse.name;
         const stock_update: number = parseInt(stock_previous + quantity);
+
+        type DataProduct = {
+          id: number,
+          name: String,
+          quantity: String
+          isChecked: boolean,
+          stock: Number,
+          variation: object,
+          type: string,
+          active:boolean,
+          add_stock_in_return:boolean,
+          user_id:Number,
+          order_id:Number,
+          warehouselected:Number,
+          concept:String
+        //   variations:[{
+        //     id:Number,
+        //     stock:Number,
+        //     product_id:Number,
+        //     suggested_price:String,
+        //     sale_price:String
+        // }]
+        }
+        let newProduct: DataProduct[] = [];
+
+
+
+        name_product.forEach(element =>
+        {
+          // if (element['product']['type'] === "SIMPLE")
+          // {
+
+            const tempDataProduct: DataProduct = {
+
+              id: element['product']['id'],
+              name: element['product']['name'],
+              quantity: element['quantity'],
+              isChecked: false,
+              stock: element['product']['stock'], //+ parseInt(element['product']['stock']),
+              variation: element['variation'],
+              type: element['product']['type'],
+              active:element['product']['active'],
+              add_stock_in_return:element['product']['add_stock_in_return'],
+              user_id:id_user,
+              order_id:id_order,
+              warehouselected:element['product']['warehouses'][0]['id'],
+              concept: 'DEVOLUCION APP - '+ new Date().toLocaleDateString(),
+          
+            }
+            newProduct.push(tempDataProduct);
+          // }else if (element['product']['type'] === "VARIABLE"){
+
+          //   const tempDataProduct: DataProduct = {
+          //     id:null,
+          //     isChecked: false,
+          //     name: element['product']['name'],
+          //     quantity: element['quantity'],
+          //     stock: null,
+          //     variation: element['variation'],
+          //     type: element['product']['type'],
+          //     active:element['product']['active'],
+          //     add_stock_in_return:element['product']['add_stock_in_return'],
+          //     user_id: id_user,
+          //     order_id: id_order,
+          //     warehouselected:element['product']['warehouses'][0]['id'],
+          //     concept: 'DEVOLUCION APP - ' + new Date().toLocaleDateString(),
+             
+          //   }
+          //   newProduct.push(tempDataProduct);
+          // }
+          console.log(newProduct)
+        });
+
 
         ////LLenado de estados /////
         setIdOrder(id_order);
@@ -288,6 +337,7 @@ export default function DevolucionScreen({
         setStockUpdate(stock_update);
         setIdWarehouse(id_warehouse);
         setGuide((current) => current.concat(guide));
+
         setArrayProducts((current) =>
           current.concat({
             id_order: id_order,
@@ -302,6 +352,7 @@ export default function DevolucionScreen({
             products: newProduct
           })
         );
+
       }
 
     } catch (e)
@@ -463,8 +514,8 @@ export default function DevolucionScreen({
 
   useEffect(() =>
   {
-   
-   setArrayProducts(arrayProducts)
+
+    setArrayProducts(arrayProducts)
   }, [arrayProducts]);
 
 
@@ -481,13 +532,13 @@ export default function DevolucionScreen({
     getSupplierId();
   }, []);
 
-  /////Renderizado en primera instancia arreglo de productos//////
-  // useEffect(() =>
-  // {
-  //   setArrayProducts(arrayProducts);
-  //   console.log(arrayProducts);
+  ///Renderizado en primera instancia arreglo de productos//////
+  useEffect(() =>
+  {
+    setArrayProducts(arrayProducts);
+    console.log(arrayProducts);
 
-  // }, [arrayProducts]);
+  }, [arrayProducts]);
 
   //// Request Camera Permission /////
   useEffect(() =>
@@ -599,7 +650,7 @@ export default function DevolucionScreen({
   {
     toggleModal(true);
     GuideSelection(item)
-  
+
     // (async () =>
     // {
     //   await updateStock(
@@ -616,7 +667,7 @@ export default function DevolucionScreen({
   async function deleteStock(index: any, guide: any)
   {
     const indice = arrayProducts.map((e) => e["guide"]).indexOf(guide);
-  
+
     arrayProducts.splice(indice, 1);
     onRefresh();
     setArrayProducts(arrayProducts);
@@ -982,7 +1033,7 @@ export default function DevolucionScreen({
                         addStock(item)
                       }
                     >
-                      
+
                       <View>
                         <IconBar
                           name="briefcase-check"
@@ -1024,12 +1075,12 @@ export default function DevolucionScreen({
                       </View>
                     </TouchableOpacity>
                   </View>
-              
+
                 </View>
               );
             }}
           ></FlatList>
-           <ModalConfirmation />
+          <ModalConfirmation />
         </View>
       </ImageBackground>
     </View>

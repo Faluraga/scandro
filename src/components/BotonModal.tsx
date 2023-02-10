@@ -1,18 +1,22 @@
 
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
 
 
 
 
-const BotonModal = (params : any , color:string ) =>{
-
-
+const BotonModal = (value : any  ) =>{
+const [visible,setVisible]=useState(false)
+useEffect(()=>{
+setVisible(value)
+},[])
     return (
         <View>
-            <TouchableOpacity style={{backgroundColor:color }}>
-                <Text style ={{color:'white'}}>{params}</Text>
+            <TouchableOpacity style={{width:20,height:20,borderWidth:1,borderRadius:100,backgroundColor:visible?'#FF8F15':'#ffff'}}
+            onPress={()=>setVisible(!visible)}
+            >
+                
             </TouchableOpacity>
         </View>
 
