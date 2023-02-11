@@ -11,6 +11,8 @@ import BotonModal from "./BotonModal";
 
 
 
+
+
 const ModalConfirmation = () => 
 {
   const [valProducts, setValProducts] = useState([]);
@@ -22,7 +24,7 @@ const ModalConfirmation = () =>
   const [token, setToken] = React.useState("");
   const [supplierId, setSupplierId] = useState();
   const [get_user_id, setGet_User_Id] = useState(Number);
-  const [idHistoryInventories, setIdHistoryInventories] = useState();
+  const [idHistoryInventories, setIdHistoryInventories] = useState([]);
   const [changeStatusView, setChangeStatusView] = useState([]);
   const [action, setAction] = useState(false);
   const [idUser, setIdUser] = useState(0);
@@ -238,68 +240,55 @@ const ModalConfirmation = () =>
   async function sendInfo()
   {
     console.log('Información enviada ===>', productUpdates)
+    updateStock();
   }
 
   ////Funcion actualizar stock  ////// esto es lo nuevo
   const updateStock = async (
-    index: any,
-    id_product: any,
-    stock_update: any,
-    warehouse: any,
-    quantity: any
+    // index: any,
+    // id_product: any,
+    // stock_update: any,
+    // warehouse: any,
+    // quantity: any
   ) =>
   {
     try
     {
 
       var response = await fetch(
-        `${rutas.urlBaseDevelomentProducts}/${id_product}`,
+        rutas.urlBaseDevelomentProductsAll,
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            active: true,
-            supplier_id: supplierId,
-            id: id_product,
-            add_stock_in_return: true,
-            stock: stock_update,
-            user_id: get_user_id,
-            warehouselected: warehouse,
-            type: "SIMPLE",
-            historyInventories: [
-              {
-                concept: "Devoluciones-App-" + new Date().toLocaleDateString(),
-                type_movement: "ENTRADA",
-                quantity: quantity,
-                variation_id: null,
-              },
-            ],
-          }),
+          body: JSON.stringify(productUpdates),
         }
       );
 
       var res = await response.json();
-
+      console.log('respuesta del consulta =>',res)
       if (res.isSuccess == true && res.status == 200)
       {
         alert(res.message);
-        var id_history_inventories = res.objects.id;
-
-        setIdHistoryInventories(id_history_inventories);
-        setChangeStatusView((current) => current.concat(index));
+       var id_history_inventories = [] = res.historyInvetories;
+        id_history_inventories.map((e)=> console.log(e['id']) )
+        
+   
         if (action === false)
         {
-          await devolution();
-          operationsDevolutions(id_history_inventories);
-
-        } else if (action === true)
-        {
-          operationsDevolutions(id_history_inventories);
-        }
+          devolution();
+          // for (var i = 0; i < id_history_inventories.length ; i++){
+          //   await  operationsDevolutions(id_history_inventories[i])
+          // }
+  
+        } 
+        // else if (action === true)
+        // {
+        //   operationsDevolutions(id_history_inventories);
+        // }
       } else if (res.isSuccess === false)
       {
         alert(res.message);
@@ -310,9 +299,9 @@ const ModalConfirmation = () =>
       console.log("ERROR =>", e);
       alert("Error al actualizar");
     }
-  };
+  }
 
-  const devolution = async () =>
+  const devolution = () =>
   {
     try
     {
@@ -385,10 +374,10 @@ const ModalConfirmation = () =>
 
 
 
-  useEffect(() =>
-  {
-    historyDevolutions(idDevolution, idHistoryInventories);
-  }, [action]);
+  // useEffect(() =>
+  // {
+  //   historyDevolutions(idDevolution, idHistoryInventories);
+  // }, [action]);
 
 
 

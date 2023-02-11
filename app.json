@@ -8,7 +8,7 @@
     "backgroundColor": "#F38D03",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/img/dropiSettings.png",
       "resizeMode": "contain",
       "backgroundColor": "#F38D03"
     },
