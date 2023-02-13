@@ -32,6 +32,7 @@ import ModalConfirmation from "./components/ModalConfirm";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalVisibility } from "./redux/slices/modal";
 import { changeGuide } from "./redux/slices/guide";
+import { changeStatusVar } from "./redux/slices/variableGlobal";
 
 export default function DevolucionScreen({
   navigation,
@@ -47,7 +48,7 @@ export default function DevolucionScreen({
   const [token, setToken] = React.useState("");
   const [idProduct, setIdProduct] = useState(0);
   const [idUser, setIdUser] = useState(0);
-  const [get_user_id, setGet_User_Id] = useState(Number);
+  const [get_user_id, setGet_User_Id] = useState();
   const [idOrder, setIdOrder] = useState(0);
   const [guide, setGuide] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -71,6 +72,9 @@ export default function DevolucionScreen({
 
   var isModalVisible = useSelector((state: any) => state.modal.visible);
   var guideCurrent = useSelector((state: any) => state.guide.visible);
+  var guideUpdate =useSelector((state: any) => state.var1.value);
+  console.log('estado de guia actualizar',guideUpdate);
+  
 
 
   const dispatch = useDispatch();
@@ -84,6 +88,10 @@ export default function DevolucionScreen({
   {
     dispatch(changeGuide(params))
   };
+   const changeStatus = (val: boolean) =>
+   {
+    dispatch(changeStatusVar(val))
+   }
 
 
 
@@ -189,11 +197,11 @@ export default function DevolucionScreen({
   async function getIdUser()
   {
     const data: any = readIdUser();
-
     data
       .then((value: any) =>
       {
         setGet_User_Id(value);
+        
       })
       .catch((error: any) =>
       {
@@ -232,7 +240,7 @@ export default function DevolucionScreen({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: get_user_id,
+          //user_id: 2,//get_user_id,
           filter_by: "GUIA",
           value_filter_by: params,
           supplier_id: supplierId,
@@ -240,7 +248,6 @@ export default function DevolucionScreen({
       });
 
       var res = await response.json();
-      //console.log('Productos ====>',res.objects[0].orderdetails[0].variation_id);
       if (res.isSuccess == true && res.status == 200)
       {
 
@@ -269,13 +276,7 @@ export default function DevolucionScreen({
           order_id:Number,
           warehouselected:Number,
           concept:String
-        //   variations:[{
-        //     id:Number,
-        //     stock:Number,
-        //     product_id:Number,
-        //     suggested_price:String,
-        //     sale_price:String
-        // }]
+
         }
         let newProduct: DataProduct[] = [];
 
@@ -283,16 +284,14 @@ export default function DevolucionScreen({
 
         name_product.forEach(element =>
         {
-          // if (element['product']['type'] === "SIMPLE")
-          // {
-
+        
             const tempDataProduct: DataProduct = {
 
               id: element['product']['id'],
               name: element['product']['name'],
               quantity: element['quantity'],
               isChecked: false,
-              stock: element['product']['stock'], //+ parseInt(element['product']['stock']),
+              stock: element['product']['stock'],
               variation: element['variation'],
               type: element['product']['type'],
               active:element['product']['active'],
@@ -303,28 +302,7 @@ export default function DevolucionScreen({
               concept: 'DEVOLUCION APP - '+ new Date().toLocaleDateString(),
           
             }
-            newProduct.push(tempDataProduct);
-          // }else if (element['product']['type'] === "VARIABLE"){
-
-          //   const tempDataProduct: DataProduct = {
-          //     id:null,
-          //     isChecked: false,
-          //     name: element['product']['name'],
-          //     quantity: element['quantity'],
-          //     stock: null,
-          //     variation: element['variation'],
-          //     type: element['product']['type'],
-          //     active:element['product']['active'],
-          //     add_stock_in_return:element['product']['add_stock_in_return'],
-          //     user_id: id_user,
-          //     order_id: id_order,
-          //     warehouselected:element['product']['warehouses'][0]['id'],
-          //     concept: 'DEVOLUCION APP - ' + new Date().toLocaleDateString(),
-             
-          //   }
-          //   newProduct.push(tempDataProduct);
-          // }
-          console.log(newProduct)
+            newProduct.push(tempDataProduct);  
         });
 
 
@@ -369,161 +347,6 @@ export default function DevolucionScreen({
     }
   };
 
-  ////Funcion actualizar stock  //////
-  const updateStock = async (
-    index: any,
-    id_product: any,
-    stock_update: any,
-    warehouse: any,
-    quantity: any
-  ) =>
-  {
-    try
-    {
-
-      var response = await fetch(
-        `${rutas.urlBaseDevelomentProducts}/${id_product}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            active: true,
-            supplier_id: supplierId,
-            id: id_product,
-            add_stock_in_return: true,
-            stock: stock_update,
-            user_id: get_user_id,
-            warehouselected: warehouse,
-            type: "SIMPLE",
-            historyInventories: [
-              {
-                concept: "Devoluciones-App-" + new Date().toLocaleDateString(),
-                type_movement: "ENTRADA",
-                quantity: quantity,
-                variation_id: null,
-              },
-            ],
-          }),
-        }
-      );
-
-      var res = await response.json();
-
-      if (res.isSuccess == true && res.status == 200)
-      {
-        alert(res.message);
-        var id_history_inventories = res.objects.id;
-
-        setIdHistoryInventories(id_history_inventories);
-        setChangeStatusView((current) => current.concat(index));
-        if (action === false)
-        {
-          await devolution();
-          operationsDevolutions(id_history_inventories);
-
-        } else if (action === true)
-        {
-          operationsDevolutions(id_history_inventories);
-        }
-      } else if (res.isSuccess === false)
-      {
-        alert(res.message);
-      }
-
-    } catch (e)
-    {
-      console.log("ERROR =>", e);
-      alert("Error al actualizar");
-    }
-  };
-
-  const devolution = async () =>
-  {
-    try
-    {
-      (async () =>
-      {
-        var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_id: idUser,
-          }),
-        });
-        var dev = await devolucion.json();
-
-        if (dev.isSuccess == true && dev.status == 200)
-        {
-          var id_devolution = dev.objects.id;
-          setIdDevolution(id_devolution);
-          setAction(true);
-        }
-      })();
-    } catch (e)
-    {
-      console.log("Error =>", e);
-      alert(e);
-    }
-  };
-
-  const historyDevolutions = async (
-    id_devolution: any,
-    id_hInventories: any
-  ) =>
-  {
-    try
-    {
-      (async () =>
-      {
-        var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id_devolutions: id_devolution,
-            id_history_inventories: id_hInventories,
-          }),
-        });
-        var res = await response.json();
-      })();
-    } catch (e)
-    {
-      console.log("Error =>", e);
-      alert(e);
-    }
-  };
-
-  const operationsDevolutions = (idHInventory: any) =>
-  {
-    if (action === true)
-    {
-      historyDevolutions(idDevolution, idHInventory);
-    }
-  };
-
-  useEffect(() =>
-  {
-
-    setArrayProducts(arrayProducts)
-  }, [arrayProducts]);
-
-
-  useEffect(() =>
-  {
-    historyDevolutions(idDevolution, idHistoryInventories);
-  }, [action]);
-
   /////Lectura de  id y token usuario /////
   useEffect(() =>
   {
@@ -535,9 +358,7 @@ export default function DevolucionScreen({
   ///Renderizado en primera instancia arreglo de productos//////
   useEffect(() =>
   {
-    setArrayProducts(arrayProducts);
     console.log(arrayProducts);
-
   }, [arrayProducts]);
 
   //// Request Camera Permission /////
@@ -545,6 +366,10 @@ export default function DevolucionScreen({
   {
     askForCameraPermission();
   }, []);
+
+  useEffect(()=>{
+    onRefresh()
+  },[guideUpdate])
 
   ////Boton añadir ////
   const handleAddProducts = (params: any) =>
@@ -639,30 +464,20 @@ export default function DevolucionScreen({
 
   ///Añadir al stock///
   async function addStock(
-    item: object
-    // index: number,
-    // item: any
-    // id_product: any,
-    // stock_update: any,
-    // warehouse: any,
-    // quantity: any
+    item: object,
+    index: number
   )
   {
     toggleModal(true);
-    GuideSelection(item)
+    GuideSelection(item);
+    //changeStatus(true);
+    
+   
 
-    // (async () =>
-    // {
-    //   await updateStock(
-    //     index,
-    //     id_product,
-    //     stock_update,
-    //     warehouse,
-    //     quantity
-    //   )
-    // })();
+      setChangeStatusView((current) => current.concat(index));
+  
   }
-
+  
   ///Eliminar producto de la lista ///
   async function deleteStock(index: any, guide: any)
   {
@@ -962,7 +777,6 @@ export default function DevolucionScreen({
             renderItem={({ item, index }) =>
             {
               return (
-
                 <View
                   style={{
                     flexDirection: "row",
@@ -971,7 +785,7 @@ export default function DevolucionScreen({
                     backgroundColor:
                       changeStatusView.filter((e) => e == index).length > 0
                         ? "#52C254"
-                        : "white",
+                        : "#FFFF",
                     borderRadius: 30,
                     justifyContent: "center",
                     alignContent: "center",
@@ -1030,7 +844,7 @@ export default function DevolucionScreen({
                         borderRadius: 50,
                       }}
                       onPress={() =>
-                        addStock(item)
+                        addStock(item,index)
                       }
                     >
 

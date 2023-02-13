@@ -3,8 +3,10 @@ import React, { useEffect, useState } from "react";
 import { FlatList, LogBox, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 import { Checkbox, Card, RadioButton, Divider } from 'react-native-paper';
+import AnimatedText from "react-native-paper/lib/typescript/components/Typography/AnimatedText";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalVisibility } from "../redux/slices/modal";
+import { changeStatusVar } from "../redux/slices/variableGlobal";
 import * as rutas from '../routes/routes';
 import { readToken, readIdUser, readId, readSupplierId } from "../storage/storage";
 import BotonModal from "./BotonModal";
@@ -23,7 +25,7 @@ const ModalConfirmation = () =>
   const [refreshing, setRefreshing] = useState(false);
   const [token, setToken] = React.useState("");
   const [supplierId, setSupplierId] = useState();
-  const [get_user_id, setGet_User_Id] = useState(Number);
+  const [_user_id, set_User_Id] = useState();
   const [idHistoryInventories, setIdHistoryInventories] = useState([]);
   const [changeStatusView, setChangeStatusView] = useState([]);
   const [action, setAction] = useState(false);
@@ -36,7 +38,8 @@ const ModalConfirmation = () =>
   var isModalVisible = useSelector((state: any) => state.modal.visible);
   var guide = useSelector((state: any) => state.guide.visible);
   var newGuide = guide.products;
-
+  var guideUpdate =useSelector((state: any) => state.var1.value);
+  console.log('estado de guia actualizar',guideUpdate);
 
   const onRefresh = React.useCallback(() =>
   {
@@ -72,6 +75,10 @@ const ModalConfirmation = () =>
   {
     dispatch(changeModalVisibility(visible));
   };
+  const changeStatus = (val: boolean) =>
+  {
+    dispatch(changeStatusVar(val));
+  }
 
 
   const handleChangeCheck = (item: object, index: any) =>
@@ -127,31 +134,33 @@ const ModalConfirmation = () =>
       let newIndex = productUpdates.findIndex(e => e.id = item['id']);
       productUpdates.splice(newIndex, 1);
       enableInput[index] = false;
-     
+
     }
     const indice = products.map((e) => e["id"]).indexOf(item["id"]);
 
-    if(item['type'] === 'SIMPLE' ){
-   
+    if (item['type'] === 'SIMPLE')
+    {
+
       let temp = products.map((product) =>
       {
         if (item['id'] === product.id)
         {
           return { ...product, isChecked: !product.isChecked };
         }
-  
+
         return product;
       });
       setProducts(temp);
-    }else if (item['type'] === 'VARIABLE'){
-      let indice = products.findIndex(e => e.variation.id == item['variation']['id'] ); 
+    } else if (item['type'] === 'VARIABLE')
+    {
+      let indice = products.findIndex(e => e.variation.id == item['variation']['id']);
       let temp = products.map((product) =>
       {
         if (product.variation != null && product.variation.id === item['variation']['id'])
         {
           return { ...product, isChecked: !product.isChecked };
         }
-  
+
         return product;
       });
       setProducts(temp);
@@ -207,7 +216,7 @@ const ModalConfirmation = () =>
 
         let quantityStockSimpleCurrency = parseInt(productUpdates[indice].stock)
         productUpdates[indice].stock = quantityStockSimpleCurrency + value;
-      
+
         console.log('Cantidad modificada ===>', productUpdates[indice])
       }
 
@@ -223,11 +232,7 @@ const ModalConfirmation = () =>
 
       }
     }
-
-
   }
-
-
 
   async function close()
   {
@@ -239,17 +244,51 @@ const ModalConfirmation = () =>
   }
   async function sendInfo()
   {
-    console.log('Información enviada ===>', productUpdates)
-    updateStock();
+   
+    if (productUpdates.length !== 0 && productUpdates !== null && productUpdates !== undefined)
+    {
+
+      console.log('Información enviada ===>', productUpdates)
+
+      updateStock().then(() =>
+      {
+        
+        changeStatus(true);
+        toggleModal(false);
+       
+        onRefresh();
+      });
+      setTimeout(() => {
+        changeStatus(false);
+      }, 2000);
+
+    }
+    else
+    {
+      alert('Selecciona al menos un producto para actualizar stock')
+    }
   }
+
+  const operationsDevolutions = async () =>
+  {
+    if (action === false && action !== null)
+    {
+      devolution();
+
+    }
+    else if (action === true && action !== null)
+    {
+      idHistoryInventories.map(id =>
+      {
+        historyDevolutions(id, idDevolution);
+      })
+    }
+  };
+  //console.log(action);
 
   ////Funcion actualizar stock  ////// esto es lo nuevo
   const updateStock = async (
-    // index: any,
-    // id_product: any,
-    // stock_update: any,
-    // warehouse: any,
-    // quantity: any
+ 
   ) =>
   {
     try
@@ -269,26 +308,15 @@ const ModalConfirmation = () =>
       );
 
       var res = await response.json();
-      console.log('respuesta del consulta =>',res)
+      
       if (res.isSuccess == true && res.status == 200)
       {
         alert(res.message);
-       var id_history_inventories = [] = res.historyInvetories;
-        id_history_inventories.map((e)=> console.log(e['id']) )
-        
-   
-        if (action === false)
-        {
-          devolution();
-          // for (var i = 0; i < id_history_inventories.length ; i++){
-          //   await  operationsDevolutions(id_history_inventories[i])
-          // }
-  
-        } 
-        // else if (action === true)
-        // {
-        //   operationsDevolutions(id_history_inventories);
-        // }
+        var id_history_inventories = [] = res.historyInvetories;
+        id_history_inventories.map((e) =>
+          idHistoryInventories.push(e['id'])
+        )
+        operationsDevolutions();
       } else if (res.isSuccess === false)
       {
         alert(res.message);
@@ -315,15 +343,21 @@ const ModalConfirmation = () =>
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: idUser,
+            user_id: _user_id,
           }),
         });
         var dev = await devolucion.json();
 
         if (dev.isSuccess == true && dev.status == 200)
         {
+
           var id_devolution = dev.objects.id;
           setIdDevolution(id_devolution);
+
+          idHistoryInventories.map(id =>
+          {
+            historyDevolutions(id, id_devolution);
+          });
           setAction(true);
         }
       })();
@@ -335,8 +369,8 @@ const ModalConfirmation = () =>
   };
 
   const historyDevolutions = async (
-    id_devolution: any,
-    id_hInventories: any
+    _id,
+    _id_devolution
   ) =>
   {
     try
@@ -351,11 +385,19 @@ const ModalConfirmation = () =>
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            id_devolutions: id_devolution,
-            id_history_inventories: id_hInventories,
+            id_devolutions: _id_devolution,
+            id_history_inventories: _id,
           }),
         });
         var res = await response.json();
+
+        if (res.status === 200 && res.isSuccess === true)
+        {
+
+          setIdHistoryInventories([]);
+          //console.log('respuesta history devolutions =>', res);
+        }
+
       })();
     } catch (e)
     {
@@ -363,23 +405,6 @@ const ModalConfirmation = () =>
       alert(e);
     }
   };
-
-  const operationsDevolutions = (idHInventory: any) =>
-  {
-    if (action === true)
-    {
-      historyDevolutions(idDevolution, idHInventory);
-    }
-  };
-
-
-
-  // useEffect(() =>
-  // {
-  //   historyDevolutions(idDevolution, idHistoryInventories);
-  // }, [action]);
-
-
 
   /// Metodo para leer el token del usuario logueado , desde el local-storage
   async function tokenUser()
@@ -405,7 +430,8 @@ const ModalConfirmation = () =>
     data
       .then((value: any) =>
       {
-        setGet_User_Id(value);
+        set_User_Id(value);
+
       })
       .catch((error: any) =>
       {
@@ -436,6 +462,10 @@ const ModalConfirmation = () =>
     getIdUser();
     getSupplierId();
   }, []);
+  useEffect(() =>
+  {
+    console.log(idDevolution);
+  }, [idDevolution])
 
   return (
     <View>
@@ -556,6 +586,21 @@ const ModalConfirmation = () =>
                   );
                 }}></FlatList>
             </View>
+            <View style={{
+              alignContent: 'flex-start',
+              alignItems: 'flex-start',
+              alignSelf: 'flex-start'
+            }} >
+              <Text style={{ color: '#C3C1BE' }}>
+                *Debes chequear un producto para actualizar su cantidad.
+
+              </Text>
+
+              <Text style={{ color: '#C3C1BE' }}>
+                *No puedes ingresar una cantidad que sea mayor a la actual.
+              </Text>
+
+            </View>
 
             <View style={{ flexDirection: "row", marginTop: 20 }}>
               <View style={{ width: "50%" }}>
@@ -587,7 +632,7 @@ const ModalConfirmation = () =>
                 <TouchableOpacity
                   style={{
                     backgroundColor: "green",
-                    width: 80,
+                    width: 87,
                     height: 32,
                     borderRadius: 18,
                     alignItems: "center",
@@ -604,7 +649,7 @@ const ModalConfirmation = () =>
                       justifyContent: "center",
                     }}
                   >
-                    Aceptar
+                    Actualizar
                   </Text>
                 </TouchableOpacity>
               </View>

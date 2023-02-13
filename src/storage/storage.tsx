@@ -46,9 +46,7 @@ async function saveToken(token: any)
 
         const tokenDropi = await SecureStore.setItemAsync('Dropitoken', token);
 
-        //const tokenDropi = await AsyncStorage.setItem('Dropitoken',token); 
-
-
+      
         return tokenDropi;
     } catch (error)
     {
@@ -61,7 +59,7 @@ async function saveIdUser(id: any)
 
     try
     {
-        //const idUser = await AsyncStorage.setItem('idUser',id); 
+        
         const idUser = await SecureStore.setItemAsync('idUser',id)
 
         return idUser;
@@ -111,14 +109,14 @@ async function readIdUser()
 {
     try
     {
-        const idUser  = SecureStore.getItemAsync("idUser")
-        .then(value =>
-        {
-            //console.log("Value for key is", value);
+        let idUser = await SecureStore.getItemAsync("idUser")
+        // .then(value =>
+        // {
+        //     console.log("Value for key is", value);
             
-        });
+        // });
         
-        return idUser;
+        return parseInt(idUser);
 
     } catch (error)
     {

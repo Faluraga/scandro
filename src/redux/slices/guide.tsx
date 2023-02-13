@@ -6,6 +6,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 interface Variable
 {
     visible: object
+    
 }
 
 // Define the initial state using that type

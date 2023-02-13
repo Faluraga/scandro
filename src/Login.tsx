@@ -127,7 +127,7 @@ export default function Login({ navigation, route }: { navigation: any, route: a
     ///Funcion de login 
 
     async function login()
-{
+    {
         try
         {
             var response = await fetch(rutas.urlBaseDevelomentLogin, {
@@ -137,50 +137,37 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
-            }).then(res => res.json())
+            })
 
-                .then(resData =>
-                {
-
-                    
-                    if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
-                    {
-
-                        alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
-                    }
-
-                    if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
-                    {
-                        
-                        const status = "login"
-                        var DropiToken = resData.token;
-                        var idUser = resData.objects.id;
-                   
-                        if (resData.objects.roleNames[0] === "LOGISTIC") { 
-                           
-                            var supplierId = JSON.stringify(resData.objects.logistic_user_provider[0].supplier_id)
-                          
-                            saveSupplierId(supplierId)
-                        };
-
-                        saveIdUser(idUser + '');
-                        saveToken(DropiToken).then(navigation.navigate("Home"));
-
-                    }
-                });
-
-            } catch (e)
+            var res = await response.json();
+            if (res.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
             {
+
+                alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
+            }
+
+            if (res.message == "Ha ingresado al sistema correctamente" && res.isSuccess === true && res.status === 200) 
+            {
+
+                var DropiToken = res.token;
+                var idUser = JSON.stringify(res.objects.id);
+                if (res.objects.roleNames[0] === "LOGISTIC")
+                {
+                    var supplierId = JSON.stringify(res.objects.logistic_user_provider[0].supplier_id)
+                    saveSupplierId(supplierId)
+                };
+
+                saveIdUser(idUser);
+                saveToken(DropiToken).then(navigation.navigate("Home"));
+
+            }
+        } catch (e)
+        {
             console.log('ERROR :', e);
             alert(e)
         }
     }
 
-
-
-
-
-    //Front
     return <View style={styles.view}>
         <ImageBackground source={require('../Img/FONDO-3.png')} style={styles.fondo}>
 
@@ -232,6 +219,5 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                 </TouchableOpacity>
             </View>
         </ImageBackground>
-
     </View>
 }
