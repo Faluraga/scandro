@@ -5,12 +5,12 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 // Define a type for the slice state
 interface Variable
 {
-    value: boolean
+    value:any
 }
 
 // Define the initial state using that type
 const initialState: Variable = {
-    value: false,
+    value: [],
 }
 
 export const varSlice = createSlice({
@@ -20,14 +20,20 @@ export const varSlice = createSlice({
     reducers: {
 
         // Use the PayloadAction type to declare the contents of `action.payload`
-        changeStatusVar: (state, action: PayloadAction<boolean>) =>
+        addOrdersUpdate: (state, action: PayloadAction<any>) =>
+        {
+            
+           state.value = state.value.concat(action.payload);
+             
+        },
+        resetByQuantity: (state, action: PayloadAction<any>) =>
         {
             state.value = action.payload
         },
     },
 })
 
-export const { changeStatusVar} = varSlice.actions
+export const {addOrdersUpdate,resetByQuantity} = varSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 //export const selectCount = (state: RootState) => state.counter.value

@@ -32,7 +32,8 @@ import ModalConfirmation from "./components/ModalConfirm";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalVisibility } from "./redux/slices/modal";
 import { changeGuide } from "./redux/slices/guide";
-import { changeStatusVar } from "./redux/slices/variableGlobal";
+import { resetByQuantity } from "./redux/slices/variableGlobal";
+
 
 export default function DevolucionScreen({
   navigation,
@@ -68,14 +69,16 @@ export default function DevolucionScreen({
   const [guideSelection, setGuideSelection] = useState(Number);
   const [visibleModal, setVisibleModal] = useState(false);
   const [stateCheck, setStateCheck] = useState(false);
-
+  const [products, setProducts] = useState([]);
 
   var isModalVisible = useSelector((state: any) => state.modal.visible);
   var guideCurrent = useSelector((state: any) => state.guide.visible);
-  var guideUpdate =useSelector((state: any) => state.var1.value);
-  console.log('estado de guia actualizar',guideUpdate);
-  
 
+  type Test = []
+
+  var orderUpdate:Test[] = []
+
+ orderUpdate = useSelector((state: any) => state.var1.value);
 
   const dispatch = useDispatch();
 
@@ -88,14 +91,11 @@ export default function DevolucionScreen({
   {
     dispatch(changeGuide(params))
   };
-   const changeStatus = (val: boolean) =>
-   {
-    dispatch(changeStatusVar(val))
-   }
+  const resetByOrdersUpdates = (val) =>{
+    dispatch(resetByQuantity(val))
+  }
 
-
-
-  const [products, setProducts] = useState([]);
+  
 
   //Estilos
   const styles = StyleSheet.create({
@@ -225,11 +225,18 @@ export default function DevolucionScreen({
     return result;
   }
 
-
   ////Funcion para listar ordenes de un usuario //////
   const getOrders = async (params: any) =>
   {
-
+ 
+  if (arrayProducts.filter(e => e['guide']=== params).length > 0) {
+    setVisibleModalInfo(true);
+    setModalInfo(`GUIA YA INGRESADA`);
+    setTimeout(() =>
+    {
+      setVisibleModalInfo(false);
+    }, 2000);
+  }else{
     try
     {
       var response = await fetch(rutas.urlBaseDevelomentOrders, {
@@ -246,11 +253,10 @@ export default function DevolucionScreen({
           supplier_id: supplierId,
         }),
       });
-
+  
       var res = await response.json();
       if (res.isSuccess == true && res.status == 200)
       {
-
         const id_order: number = parseInt(res.objects[0].id);
         const id_user: number = parseInt(res.objects[0].user_id);
         const id_product: number = parseInt(res.objects[0].orderdetails[0].product.id);
@@ -261,7 +267,7 @@ export default function DevolucionScreen({
         const id_warehouse: number = parseInt(res.objects[0].warehouse_id);
         const name_warehouse: string = res.objects[0].warehouse.name;
         const stock_update: number = parseInt(stock_previous + quantity);
-
+  
         type DataProduct = {
           id: number,
           name: String,
@@ -276,17 +282,14 @@ export default function DevolucionScreen({
           order_id:Number,
           warehouselected:Number,
           concept:String
-
+  
         }
         let newProduct: DataProduct[] = [];
-
-
-
+  
         name_product.forEach(element =>
         {
-        
             const tempDataProduct: DataProduct = {
-
+  
               id: element['product']['id'],
               name: element['product']['name'],
               quantity: element['quantity'],
@@ -304,8 +307,8 @@ export default function DevolucionScreen({
             }
             newProduct.push(tempDataProduct);  
         });
-
-
+  
+  
         ////LLenado de estados /////
         setIdOrder(id_order);
         setIdUser(id_user);
@@ -315,7 +318,7 @@ export default function DevolucionScreen({
         setStockUpdate(stock_update);
         setIdWarehouse(id_warehouse);
         setGuide((current) => current.concat(guide));
-
+  
         setArrayProducts((current) =>
           current.concat({
             id_order: id_order,
@@ -324,27 +327,28 @@ export default function DevolucionScreen({
             id_warehouse: id_warehouse,
             quantity: quantity,
             stock_previous: stock_previous,
-            stock_update: stock_update,
+            //stock_update: stock_update,
             name_warehouse: name_warehouse,
             guide: guide,
             products: newProduct
           })
         );
-
+  
       }
-
+  
     } catch (e)
     {
       console.log("ERROR :", e);
       setVisibleModalInfo(true);
       setModalInfo(`GUIA #${params} NO ENCONTRADA`);
-
-      //alert(`GUIA #${params} NO ENCONTRADA`);
       setTimeout(() =>
       {
         setVisibleModalInfo(false);
       }, 2000);
     }
+  }
+  
+
   };
 
   /////Lectura de  id y token usuario /////
@@ -367,9 +371,7 @@ export default function DevolucionScreen({
     askForCameraPermission();
   }, []);
 
-  useEffect(()=>{
-    onRefresh()
-  },[guideUpdate])
+
 
   ////Boton añadir ////
   const handleAddProducts = (params: any) =>
@@ -419,8 +421,12 @@ export default function DevolucionScreen({
       }
       if (arrayProducts.map((e) => e["guide"]).includes(data) === true)
       {
-        alert("GUIA YA ESCANEADA");
-        //setScanned(false);
+        setVisibleModalInfo(true);
+        setModalInfo(`GUIA YA INGRESADA`);
+        setTimeout(() =>
+        {
+          setVisibleModalInfo(false);
+        }, 2000);
         (async () =>
         {
           setScanned(true);
@@ -469,13 +475,7 @@ export default function DevolucionScreen({
   )
   {
     toggleModal(true);
-    GuideSelection(item);
-    //changeStatus(true);
-    
-   
-
-      setChangeStatusView((current) => current.concat(index));
-  
+    GuideSelection(item);  
   }
   
   ///Eliminar producto de la lista ///
@@ -509,7 +509,7 @@ export default function DevolucionScreen({
           e["name_warehouse"],
           e["quantity"],
           e["stock_previous"],
-          e["stock_update"],
+          //e["stock_update"],
         ];
       });
 
@@ -524,7 +524,7 @@ export default function DevolucionScreen({
           "NOMBRE-BODEGA",
           "CANTIDAD-DEVOLUCION",
           "STOCK-PREVIO",
-          "STOCK-ACTUALIZADO",
+          //"STOCK-ACTUALIZADO",
         ],
         ...items,
       ]);
@@ -549,11 +549,22 @@ export default function DevolucionScreen({
         });
     } else
     {
-      alert(
-        "Debes escanear al menos una guia para generar un documento xlsx(Excel)"
-      );
+      setVisibleModalInfo(true);
+      setModalInfo("Debes escanear al menos una guia para generar un documento xlsx(Excel)");
+      setTimeout(() =>
+      {
+        setVisibleModalInfo(false);
+      }, 2000);
     }
   };
+
+ 
+   function goBack (){
+    resetByOrdersUpdates([null]);
+    //console.log('ordenes actualizadas =>', orderUpdate);
+    navigation.navigate('Home');
+  }
+
 
   return (
     <View style={styles.viewTotal}>
@@ -570,7 +581,7 @@ export default function DevolucionScreen({
               name="angle-double-left"
               size={30}
               color={"tomato"}
-              onPress={() => navigation.navigate("Home")}
+              onPress={() => goBack()}
             />
           </TouchableOpacity>
           <Text style={styles.textDevoluciones}>Devoluciones</Text>
@@ -589,6 +600,7 @@ export default function DevolucionScreen({
                 alignItems: "center",
                 backgroundColor: "tomato",
               }}
+              
               onPress={() => setVisibleCodeBar(!visibleCodeBar)}
             >
               <View>
@@ -736,7 +748,7 @@ export default function DevolucionScreen({
             borderWidth: 1,
             top: 10,
             width: 350,
-            height: 370,
+            height: 330,
             borderRadius: 15,
             backgroundColor: "white",
             marginBottom: 100,
@@ -748,7 +760,7 @@ export default function DevolucionScreen({
               <Text
                 style={{ fontSize: 18, fontWeight: "bold", color: "tomato" }}
               >
-                ID
+                #
               </Text>
             </View>
             <View style={{ width: "60%", alignItems: "center" }}>
@@ -783,7 +795,7 @@ export default function DevolucionScreen({
                     marginTop: 15,
                     margin: 3,
                     backgroundColor:
-                      changeStatusView.filter((e) => e == index).length > 0
+                    orderUpdate.filter(e=>e==item['id_order']).length>0
                         ? "#52C254"
                         : "#FFFF",
                     borderRadius: 30,
@@ -791,14 +803,15 @@ export default function DevolucionScreen({
                     alignContent: "center",
                     alignItems: "center",
                   }}
-                  key={item['order_id']}
+                  key={item['id_order']}
                 >
                   <View
                     style={{ width: "10%", alignItems: "center" }}
                   >
+                    
                     <Text
                       style={
-                        changeStatusView.filter((e) => e == index).length > 0
+                        orderUpdate.filter(e=>e==item['id_order']).length>0
                           ? { color: "white", fontWeight: "bold", fontSize: 15 }
                           : { color: "black", fontWeight: null } && {
                             fontSize: 15,
@@ -812,7 +825,7 @@ export default function DevolucionScreen({
                   <View style={{ width: "60%", alignItems: "center" }}>
                     <Text
                       style={
-                        changeStatusView.filter((e) => e == index).length > 0
+                        orderUpdate.filter(e=>e=== item['id_order']).length>0
                           ? { color: "white", fontWeight: "bold", fontSize: 15 }
                           : { color: "black", fontWeight: null } && {
                             fontSize: 15,
@@ -821,7 +834,6 @@ export default function DevolucionScreen({
                     >
                       {" "}
                       {item["guide"]}{" "}
-
                     </Text>
                   </View>
                   <View
@@ -829,11 +841,12 @@ export default function DevolucionScreen({
                       width: "15%",
                       alignItems: "center",
                       display:
-                        changeStatusView.filter((e) => e == index).length > 0
+                      orderUpdate.filter(e=>e== item['id_order']).length>0
                           ? "none"
                           : "flex",
                     }}
                   >
+      
                     <TouchableOpacity
                       style={{
                         width: 32,
@@ -843,11 +856,12 @@ export default function DevolucionScreen({
                         //backgroundColor: "#52C254",
                         borderRadius: 50,
                       }}
+                      
+                      
                       onPress={() =>
                         addStock(item,index)
                       }
                     >
-
                       <View>
                         <IconBar
                           name="briefcase-check"
@@ -863,7 +877,7 @@ export default function DevolucionScreen({
                       width: "15%",
                       alignItems: "center",
                       display:
-                        changeStatusView.filter((e) => e == index).length > 0
+                      orderUpdate.filter(e=>e==item['id_order']).length>0
                           ? "none"
                           : "flex",
                     }}

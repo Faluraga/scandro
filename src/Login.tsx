@@ -1,11 +1,13 @@
 
 import React, { useState } from 'react'
-import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
+import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 import IconEye from "react-native-vector-icons/Ionicons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as rutas from './routes/routes';
 import { saveToken, saveIdUser, saveSupplierId, readSupplierId } from './storage/storage';
 import * as SecureStore from 'expo-secure-store';
+import { TextInput } from 'react-native-paper';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 
 
@@ -80,29 +82,26 @@ export default function Login({ navigation, route }: { navigation: any, route: a
             borderWidth: 1,
             paddingLeft: 8,
             backgroundColor: '#fff',
-            fontSize: 17
+
 
         },
         box_input: {
 
-            top: 40,
-            marginTop: 15,
-            width: '93%',
-            height: 42,
-            borderRadius: 10,
+            top: 50,
+            marginBottom:10,
+            width: 310,
+            height: 50,
+            borderRadius: 4,
             alignContent: 'center',
             justifyContent: 'center',
             alignSelf: 'center',
             borderColor: '#4D1A70',
-            borderWidth: 1,
-            paddingLeft: 8,
-            backgroundColor: '#fff',
-            fontSize: 17
-
+            borderWidth: 1.2,
+            backgroundColor: '#FFFFFF',
+         
         }
     });
 
-    ////////////////////////////
 
     const [email, setEmail] = useState({});
     const [pass, setPass] = useState("");
@@ -124,8 +123,7 @@ export default function Login({ navigation, route }: { navigation: any, route: a
 
     }
 
-    ///Funcion de login 
-
+   
     async function login()
     {
         try
@@ -175,42 +173,46 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                 <Image style={styles.Imagenlogo} source={require('../Img/dropiSettings.png')} />
             </View>
 
+            <View style={{ flexDirection: 'column' }}>
 
-            <View style={{ width: '90%' }}>
+                <View>
 
-                <View style={styles.box_input}>
-                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su correo." onChangeText={(value) => setEmail(value)} autoComplete={'email'} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0" />
                 </View>
+                <TextInput
+                    style={styles.box_input}
+                    placeholder="Escriba aquí su correo."
+                    onChangeText={(value) => setEmail(value)}
+                    autoComplete={'email'}
+                    editable={true}
+                    placeholderTextColor="#CAC4D0"
+                    underlineColorAndroid={'white'}
+                    underlineColor={'white'}
+                    activeOutlineColor={'white'}
+                   
 
+                    
+                />
+                
+
+
+                <TextInput
+                    style={[styles.box_input]}
+                    placeholder="Escriba aquí su contraseña."
+                    onChangeText={(value) => setPass(value)}
+                    secureTextEntry={passwordVisibility}
+                    autoComplete={'password'}
+                    editable={true}
+                    autoCorrect={false}
+                    placeholderTextColor="#CAC4D0"
+                    underlineColorAndroid={'white'}
+                    underlineColor={'white'}
+                    activeOutlineColor={'white'}
+                    right={<TextInput.Icon icon={passwordVisibility ? "eye-off" : "eye"} onPress={() => setPasswordVisibility(!passwordVisibility)} />}
+                />
             </View>
 
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', left: 12 }} >
 
-                <View style={styles.box_input}>
-                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su contraseña." onChangeText={(value) => setPass(value)} secureTextEntry={passwordVisibility} autoComplete={'password'} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0" />
-                </View>
-
-                <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={{ top: 48, right: 33, width: '10%' }}
-                    onPress={() => password()}
-                >
-                    {passwordVisibility ? (
-                        <IconEye
-                            name="eye-off-outline"
-                            size={23}
-                            color="black"
-                        />
-                    ) : (
-                        <IconEye
-                            name="eye-outline"
-                            size={23}
-                            color="black"
-                        />
-                    )}
-                </TouchableOpacity>
-            </View>
             <View style={styles.btn_login}>
                 <TouchableOpacity onPress={() => login()}>
                     <Text style={styles.text_login}>

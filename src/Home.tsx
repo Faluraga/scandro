@@ -29,7 +29,7 @@ import Modal from "react-native-modal";
 import ModalInfo from "./components/ModalInfo";
 import BotonModal from "./components/BotonModal"
 import {useDispatch , useSelector }from 'react-redux'
-import { changeVariable,resetByAmount } from "./redux/slices/variableGlobal";
+
 import * as rutas from './routes/routes'
 
 
@@ -48,19 +48,6 @@ export default function Home ({ navigation, route }: { navigation: any; route: a
   const [token, setToken] = React.useState("");
   const [menuBar, setMenuBar] = useState(["Configuración", "notificaciones"]);
   
-
-  var variableGlobal = useSelector((state:any)=>state.var1.value)
-  const dispatch = useDispatch()
-
-  const incrementValue = () => {
-    dispatch(changeVariable('francisco'));
-  };
-
-  const resetValue = () => {
-    dispatch(resetByAmount(''))};
-  
-  //console.log('REDUX=>',variableGlobal);
-
   /////Estilos//////
   const styles = StyleSheet.create({
     view: {
@@ -244,11 +231,15 @@ export default function Home ({ navigation, route }: { navigation: any; route: a
         setVisibleModal(false);
        
         console.log('Sesion close');  
-      } else if (res.isSuccess === false && res.status === 400)
+      } else if (res.isSuccess === false && res.status === 400 && res.message === "The token could not be parsed from the request")
       {
-        alert(
-          "No se pudo analizar el token de la solicitud, Cierre la aplicación"
-        );
+        alert("No se pudo analizar el token de la solicitud, Cierre la aplicación");
+        saveToken("");
+        saveIdUser("");
+        saveSupplierId("")
+        navigation.navigate("Login");
+      }else if (res.isSuccess === false && res.code === 401 && res.status === "Token is Invalid"){
+        alert("Token no valido para la solicitud")
         saveToken("");
         saveIdUser("");
         saveSupplierId("")
@@ -421,7 +412,7 @@ export default function Home ({ navigation, route }: { navigation: any; route: a
               </TouchableOpacity>
 
               <TouchableOpacity
-                onPress={() => incrementValue()}
+              
                 style={styles.btn_salidas}
               >
                 <Image

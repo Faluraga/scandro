@@ -11,6 +11,7 @@ import Salidas from './src/Salidas';
 import { readToken } from './src/storage/storage';
 import { Provider } from 'react-redux';
 import {store} from './src/redux/store'
+import { StatusBar } from 'expo-status-bar';
 
 const Stack = createNativeStackNavigator();
 

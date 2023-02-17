@@ -6,10 +6,12 @@ import { Checkbox, Card, RadioButton, Divider } from 'react-native-paper';
 import AnimatedText from "react-native-paper/lib/typescript/components/Typography/AnimatedText";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalVisibility } from "../redux/slices/modal";
-import { changeStatusVar } from "../redux/slices/variableGlobal";
+import { addOrdersUpdate } from "../redux/slices/variableGlobal";
 import * as rutas from '../routes/routes';
 import { readToken, readIdUser, readId, readSupplierId } from "../storage/storage";
-import BotonModal from "./BotonModal";
+import ModalInfo from "./ModalInfo";
+import NumericInput from 'react-native-numeric-input'
+
 
 
 
@@ -21,7 +23,7 @@ const ModalConfirmation = () =>
   const [products, setProducts] = useState([])
   const [productUpdates, setProductUpdates] = useState([])
   const [productsCurrent, setProductsCurrent] = useState([])
-  const [enableInput, setEnableInput] = useState([false, false, false])
+  const [enableInput, setEnableInput] = useState([false, false, false, false, false])
   const [refreshing, setRefreshing] = useState(false);
   const [token, setToken] = React.useState("");
   const [supplierId, setSupplierId] = useState();
@@ -32,14 +34,16 @@ const ModalConfirmation = () =>
   const [idUser, setIdUser] = useState(0);
   const [idDevolution, setIdDevolution] = useState();
   const [changeButtons, setChangeButtons] = useState()
-  const atributesValues = []
+  const [visibleModalInfo, setVisibleModalInfo] = useState(false);
+  const [modalInfo, setModalInfo] = useState("");
+  const atributesValues = [];
+
 
 
   var isModalVisible = useSelector((state: any) => state.modal.visible);
   var guide = useSelector((state: any) => state.guide.visible);
   var newGuide = guide.products;
-  var guideUpdate =useSelector((state: any) => state.var1.value);
-  console.log('estado de guia actualizar',guideUpdate);
+  var ordersUpdates = useSelector((state: any) => state.var1.value);
 
   const onRefresh = React.useCallback(() =>
   {
@@ -63,11 +67,11 @@ const ModalConfirmation = () =>
 
   }, [newGuide])
 
-  useEffect(() =>
-  {
-    console.log('PRODUCTOS AGREGADOS=>', productUpdates);
+  // useEffect(() =>
+  // {
+  //   console.log('PRODUCTOS AGREGADOS=>', productUpdates);
 
-  }, [productUpdates])
+  // }, [productUpdates])
 
   const dispatch = useDispatch();
 
@@ -75,15 +79,16 @@ const ModalConfirmation = () =>
   {
     dispatch(changeModalVisibility(visible));
   };
-  const changeStatus = (val: boolean) =>
+  const addOrders = (val: []) =>
   {
-    dispatch(changeStatusVar(val));
+    dispatch(addOrdersUpdate(val))
   }
 
 
   const handleChangeCheck = (item: object, index: any) =>
   {
 
+    console.log('Product Selected =>', item);
 
     if (item['isChecked'] === false) 
     {
@@ -168,68 +173,78 @@ const ModalConfirmation = () =>
 
   };
 
-  async function handleUpdateValueProduct(val: any, index: any, item: object)
+  function handleUpdateValueProduct(val: any, index: any, item: object)
   {
+    console.log('Item =>',item);
 
     var indice: number;
-    let value = parseInt(val);
+    var value = parseInt(val);
     valProducts[index] = val;
-    let typeProduct = products[index].type;
+    let valCurrent = [];
+    valCurrent[index] = item['quantity'];
+
+
     if (item['type'] === 'SIMPLE')
     {
-      indice = productUpdates.findIndex(e => e['id'] == item['id']);//productUpdates.map((e) => e["id"]).indexOf({id,});
-      //console.log('INDICE simple=>', indice);
+      indice = productUpdates.findIndex(e => e['id'] == item['id']);
     }
     else if (item['type'] === 'VARIABLE')
     {
       indice = productUpdates.findIndex(e => e['variations'][0].id == item['variation'].id)
-      //console.log('INDICE - variable=>', indice);
     }
 
-    let valCurrent = [];
-    valCurrent[index] = products[index].quantity;
 
-    if (valProducts[index] > valCurrent[index])  
+    if (
+
+      valProducts[index] > valCurrent[index] ||
+      valProducts[index] == null ||
+      valProducts[index] == undefined ||
+      valProducts[index] <= 0 || valProducts[index] === "" ||
+      valProducts[index].trim() === true ||
+      valProducts[index].trim() === ""
+    )  
     {
-      alert('El valor no puede superar la cantidad actual del producto');
-      valProducts[index] = valCurrent[index];
-      onRefresh();
-    } else if (valProducts[index] == null)
-    {
-      alert('El valor no puede ser nulo');
-      valProducts[index] = valCurrent[index];
-    } else if (valProducts[index] == undefined)
-    {
-      alert('El valor no puede ser nulo');
-      valProducts[index] = valCurrent[index];
-    }
-    else if (valProducts[index] <= 0)
-    {
-      alert('El valor no puede ser cero')
-      valProducts[index] = valCurrent[index];
+      alert('VALOR NO ADMITIDO');
+      
+      if (productUpdates[indice].type === 'SIMPLE' && productUpdates[indice].stock != item['stock'])
+      {
+        
+        const tempQuantity = parseInt(item['stock'])
+        console.log('valor a restablecer=>', tempQuantity);
+        productUpdates[indice].stock = tempQuantity;
+        console.log('Cantidad modificada ===>', productUpdates[indice])  
+        onRefresh();
+      }
+
+
+      if (productUpdates[indice].type === 'VARIABLE' && productUpdates[indice]['variations'][0]['stock'] != item['variation'].stock)
+      {
+        
+        const tempQuantity = parseInt(item['variation'].stock);
+        console.log('valor a restablecer=>', tempQuantity);
+        productUpdates[indice]['variations'][0]['stock'] = tempQuantity;
+        console.log('Cantidad variable modificada =>', productUpdates[indice]['variations'][0]['stock']);
+        onRefresh();
+      }
+
     }
     else
     {
-
       if (productUpdates[indice].type === 'SIMPLE')
       {
 
         let quantityStockSimpleCurrency = parseInt(productUpdates[indice].stock)
         productUpdates[indice].stock = quantityStockSimpleCurrency + value;
-
         console.log('Cantidad modificada ===>', productUpdates[indice])
       }
 
 
-      if (productUpdates[indice].type === 'VARIABLE')
+      else if (productUpdates[indice].type === 'VARIABLE')
       {
 
         let quantitystockVariableCurrency = productUpdates[indice]['variations'][0]['stock']
-
         productUpdates[indice]['variations'][0]['stock'] = quantitystockVariableCurrency + value;
-
         console.log('Cantidad variable modificada =>', productUpdates[indice]['variations'][0]['stock']);
-
       }
     }
   }
@@ -237,35 +252,51 @@ const ModalConfirmation = () =>
   async function close()
   {
     toggleModal(false);
+    setEnableInput([false, false, false, false, false])
     setProductUpdates([]);
     setValProducts([])
     onRefresh();
-
   }
+
   async function sendInfo()
   {
-   
+
     if (productUpdates.length !== 0 && productUpdates !== null && productUpdates !== undefined)
     {
-
-      console.log('Información enviada ===>', productUpdates)
-
-      updateStock().then(() =>
+      if (valProducts.length === 0)
       {
-        
-        changeStatus(true);
-        toggleModal(false);
-       
-        onRefresh();
-      });
-      setTimeout(() => {
-        changeStatus(false);
-      }, 2000);
+        setVisibleModalInfo(true);
+        setModalInfo('Ingresa una cantidad');
+        setTimeout(() =>
+        {
+          setVisibleModalInfo(false);
+        }, 2000);
+      } else
+      {
+        productUpdates.forEach(e =>
+          addOrders(e['order_id'])
 
+        )
+        console.log('Información enviada ===>', productUpdates)
+
+        await updateStock().then(() =>
+        {
+          toggleModal(false);
+          setEnableInput([false, false, false, false, false])
+          setProductUpdates([]);
+          setValProducts([])
+          onRefresh();
+        });
+      }
     }
     else
     {
-      alert('Selecciona al menos un producto para actualizar stock')
+      setVisibleModalInfo(true);
+      setModalInfo('Selecciona un producto para actualizar stock');
+      setTimeout(() =>
+      {
+        setVisibleModalInfo(false);
+      }, 2000);
     }
   }
 
@@ -274,7 +305,6 @@ const ModalConfirmation = () =>
     if (action === false && action !== null)
     {
       devolution();
-
     }
     else if (action === true && action !== null)
     {
@@ -284,11 +314,11 @@ const ModalConfirmation = () =>
       })
     }
   };
-  //console.log(action);
+
 
   ////Funcion actualizar stock  ////// esto es lo nuevo
   const updateStock = async (
- 
+
   ) =>
   {
     try
@@ -308,18 +338,31 @@ const ModalConfirmation = () =>
       );
 
       var res = await response.json();
-      
+
       if (res.isSuccess == true && res.status == 200)
       {
-        alert(res.message);
+        //alert(res.message);
         var id_history_inventories = [] = res.historyInvetories;
         id_history_inventories.map((e) =>
           idHistoryInventories.push(e['id'])
         )
         operationsDevolutions();
+        setVisibleModalInfo(true);
+        setModalInfo(res.message);
+        setTimeout(() =>
+        {
+          setVisibleModalInfo(false);
+        }, 2000);
+
       } else if (res.isSuccess === false)
       {
-        alert(res.message);
+        setVisibleModalInfo(true);
+        setModalInfo(res.message);
+        setTimeout(() =>
+        {
+          setVisibleModalInfo(false);
+        }, 2000);
+        //alert(res.message);
       }
 
     } catch (e)
@@ -343,7 +386,7 @@ const ModalConfirmation = () =>
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: _user_id,
+            user_id: supplierId,
           }),
         });
         var dev = await devolucion.json();
@@ -395,7 +438,6 @@ const ModalConfirmation = () =>
         {
 
           setIdHistoryInventories([]);
-          //console.log('respuesta history devolutions =>', res);
         }
 
       })();
@@ -469,6 +511,7 @@ const ModalConfirmation = () =>
 
   return (
     <View>
+      <ModalInfo params={modalInfo} value={visibleModalInfo} />
       <Modal
         animationIn="bounce"
         animationInTiming={1000}
@@ -532,28 +575,23 @@ const ModalConfirmation = () =>
                 scrollEnabled={true}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                //keyExtractor={({ id }, item) => id}
+                keyExtractor={({ item }, id) => item}
                 renderItem={({ item, index }) =>
                 {
                   return (
 
-                    <View style={{ flexDirection: 'row' }} key={item} >
+                    <View style={{ flexDirection: 'row' }} key={item['variation']? item['variation'].id:item['id']} >
                       <View style={{ width: '30%', justifyContent: 'center' }}>
                         <RadioButton
                           value="#FF8F15"
                           color="#FF8F15"
                           uncheckedColor="#FF8F15"
-                          //disabled={stateCheck}
                           status={item.isChecked ? 'checked' : 'unchecked'}
                           onPress={() =>
                           {
                             handleChangeCheck(item, index);
-
                           }}
                         />
-                        {/* <BotonModal onPress = {()=>handleChangeCheck(item, index)}>
-                                              
-                                                </BotonModal> */}
 
                       </View>
                       <View style={{ width: '40%', justifyContent: 'center' }} >
@@ -572,9 +610,9 @@ const ModalConfirmation = () =>
                         }
                       </View>
                       <View style={{ width: '20%', justifyContent: 'center', alignItems: 'flex-end', alignSelf: 'center', alignContent: 'center', backgroundColor: 'white', }}>
-                        <TextInput style={{ backgroundColor: 'white', width: 50, height: 30, borderWidth: 1, textAlign: 'center' }}
+                        <TextInput style={{ backgroundColor: 'white', width: 50, height: 30, borderWidth: 1, textAlign: 'center', color: 'tomato' }}
                           keyboardType={'numeric'}
-                          maxLength={2}
+                          maxLength={parseInt(item['quantity'])}
                           editable={enableInput[index]}
                           placeholder={item['quantity'].slice(0, item['quantity'].length - 3)}
                           //defaultValue={item['value'].slice(0, item['value'].length - 3)}
@@ -593,11 +631,13 @@ const ModalConfirmation = () =>
             }} >
               <Text style={{ color: '#C3C1BE' }}>
                 *Debes chequear un producto para actualizar su cantidad.
-
               </Text>
 
               <Text style={{ color: '#C3C1BE' }}>
                 *No puedes ingresar una cantidad que sea mayor a la actual.
+              </Text>
+              <Text style={{ color: '#C3C1BE' }}>
+                *La cantidad que se muestra en la casilla es la actual del pedido.
               </Text>
 
             </View>
