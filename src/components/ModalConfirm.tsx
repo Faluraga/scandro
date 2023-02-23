@@ -637,7 +637,7 @@ const ModalConfirmation = () =>
                 *No puedes ingresar una cantidad que sea mayor a la actual.
               </Text>
               <Text style={{ color: '#C3C1BE' }}>
-                *La cantidad que se muestra en la casilla es la actual del pedido.
+                *La cantidad que se muestra en la casilla, coresponde a la actual del pedido.
               </Text>
 
             </View>

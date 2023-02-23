@@ -33,6 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { changeModalVisibility } from "./redux/slices/modal";
 import { changeGuide } from "./redux/slices/guide";
 import { resetByQuantity } from "./redux/slices/variableGlobal";
+import { current } from "@reduxjs/toolkit";
 
 
 export default function DevolucionScreen({
@@ -224,12 +225,13 @@ export default function DevolucionScreen({
 
     return result;
   }
-
+  let tempGuidesArray = [];
+ 
   ////Funcion para listar ordenes de un usuario //////
   const getOrders = async (params: any) =>
   {
- 
-  if (arrayProducts.filter(e => e['guide']=== params).length > 0) {
+
+  if (arrayProducts.map((e) => e["guide"]).includes(params) === true  ) {
     setVisibleModalInfo(true);
     setModalInfo(`GUIA YA INGRESADA`);
     setTimeout(() =>
