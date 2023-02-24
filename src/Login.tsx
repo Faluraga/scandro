@@ -188,9 +188,8 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                     underlineColorAndroid={'white'}
                     underlineColor={'white'}
                     activeOutlineColor={'white'}
-                   
-
-                    
+                    keyboardType={'email-address'}
+                    autoCapitalize="none"
                 />
                 
 

@@ -632,7 +632,7 @@ const ModalConfirmation = () =>
               alignSelf: 'flex-start'
             }} >
               <Text style={{ color: '#C3C1BE' }}>
-                *Debes chequear un producto para actualizar su cantidad.
+                *Debes seleccionar un producto para actualizar su cantidad.
               </Text>
 
               <Text style={{ color: '#C3C1BE' }}>

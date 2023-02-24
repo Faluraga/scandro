@@ -21,6 +21,8 @@ export const urlBaseTestProducts = 'https://test-api.dropi.co/api/products';
 export const urlBaseTestDevolutions = 'https://test-api.dropi.co/api/devolution/create';
 export const urlBaseTestHistoryDevolutions = 'https://test-api.dropi.co/api/devolution/createhistorydevolution';
 export const urlBaseTestProductsAll = 'https://test-api.dropi.co/api/products/update_all';
+export const urlBaseTesShowHistoryDevolutions = "https://test-api.dropi.co/api/devolution/showhistorydevolution";
+
 
 
 
@@ -32,3 +34,5 @@ export const urlBaseProductionProducts = 'https://api.dropi.co/api/products';
 export const urlBaseProductionDevolutions = 'https://api.dropi.co/api/devolution/create';
 export const urlBaseProductionHistoryDevolutions = 'https://api.dropi.co/api/devolution/createhistorydevolution';
 export const urlBaseProductionProductsAll = 'https://api.dropi.co/api/products/update_all';
+export const urlBaseProductionShowHistoryDevolutions = "https://api.dropi.co/api/devolution/showhistorydevolution";
+
