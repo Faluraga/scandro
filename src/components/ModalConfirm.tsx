@@ -44,7 +44,8 @@ const ModalConfirmation = () =>
   var guide = useSelector((state: any) => state.guide.visible);
   var newGuide = guide.products;
   var ordersUpdates = useSelector((state: any) => state.var1.value);
-
+ 
+  
   const onRefresh = React.useCallback(() =>
   {
     (async () =>
@@ -386,7 +387,7 @@ const ModalConfirmation = () =>
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            user_id: supplierId,
+            user_id: _user_id
           }),
         });
         var dev = await devolucion.json();
@@ -430,6 +431,7 @@ const ModalConfirmation = () =>
           body: JSON.stringify({
             id_devolutions: _id_devolution,
             id_history_inventories: _id,
+            order_id:newGuide[0]['order_id'],
           }),
         });
         var res = await response.json();
@@ -580,7 +582,7 @@ const ModalConfirmation = () =>
                 {
                   return (
 
-                    <View style={{ flexDirection: 'row' }} key={item['variation']? item['variation'].id:item['id']} >
+                    <View style={{ flexDirection: 'row' }} key={item['variation'] == null? item['id']:item['variation'].id} >
                       <View style={{ width: '30%', justifyContent: 'center' }}>
                         <RadioButton
                           value="#FF8F15"
