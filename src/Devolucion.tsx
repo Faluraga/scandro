@@ -842,7 +842,7 @@ export default function DevolucionScreen({
                     alignContent: "center",
                     alignItems: "center",
                   }}
-                  key={item}
+                  key={item['id_order'] && index }
                 >
                   <View
                     style={{ width: "10%", alignItems: "center" }}
