@@ -3,18 +3,12 @@ import React, { useEffect, useState } from "react";
 import { FlatList, LogBox, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 import { Checkbox, Card, RadioButton, Divider } from 'react-native-paper';
-import AnimatedText from "react-native-paper/lib/typescript/components/Typography/AnimatedText";
 import { useDispatch, useSelector } from "react-redux";
 import { changeModalVisibility } from "../redux/slices/modal";
 import { addOrdersUpdate } from "../redux/slices/variableGlobal";
 import * as rutas from '../routes/routes';
 import { readToken, readIdUser, readId, readSupplierId } from "../storage/storage";
 import ModalInfo from "./ModalInfo";
-import NumericInput from 'react-native-numeric-input'
-
-
-
-
 
 
 const ModalConfirmation = () => 
@@ -326,7 +320,7 @@ const ModalConfirmation = () =>
     {
 
       var response = await fetch(
-        rutas.urlBaseDevelomentProductsAll,
+        rutas.urlBaseTestProductsAll,
         {
           method: "POST",
           headers: {
@@ -379,7 +373,7 @@ const ModalConfirmation = () =>
     {
       (async () =>
       {
-        var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
+        var devolucion = await fetch(rutas.urlBaseTestDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -421,7 +415,7 @@ const ModalConfirmation = () =>
     {
       (async () =>
       {
-        var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
+        var response = await fetch(rutas.urlBaseTestHistoryDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

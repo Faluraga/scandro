@@ -280,7 +280,7 @@ export default function DevolucionScreen({
           const name_warehouse: string = res.objects[0].warehouse.name;
           const stock_update: number = parseInt(stock_previous + quantity);
 
-          var devolucion = await fetch(rutas.urlBaseDevelomentShowHistoryDevolutions, {
+          var devolucion = await fetch(rutas.urlBaseTesShowHistoryDevolutions, {
             method: "POST",
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -842,7 +842,7 @@ export default function DevolucionScreen({
                     alignContent: "center",
                     alignItems: "center",
                   }}
-                  key={item['id_order'] && index }
+                  key={parseInt(item['id_order']) || index }
                 >
                   <View
                     style={{ width: "10%", alignItems: "center" }}

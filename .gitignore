@@ -1,4 +1,5 @@
 node_modules/
+routes/
 .expo/
 dist/
 npm-debug.*

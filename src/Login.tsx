@@ -1,15 +1,9 @@
 
 import React, { useState } from 'react'
 import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
-import IconEye from "react-native-vector-icons/Ionicons";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as rutas from './routes/routes';
 import { saveToken, saveIdUser, saveSupplierId, readSupplierId } from './storage/storage';
-import * as SecureStore from 'expo-secure-store';
 import { TextInput } from 'react-native-paper';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-
-
 
 export default function Login({ navigation, route }: { navigation: any, route: any })
 {
@@ -128,7 +122,7 @@ export default function Login({ navigation, route }: { navigation: any, route: a
     {
         try
         {
-            var response = await fetch(rutas.urlBaseDevelomentLogin, {
+            var response = await fetch(rutas.urlBaseTestLogin, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
