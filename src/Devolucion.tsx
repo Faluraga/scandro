@@ -250,7 +250,7 @@ export default function DevolucionScreen({
     {
       try
       {
-        var response = await fetch(rutas.urlBaseDevelomentOrders, {
+        var response = await fetch(rutas.urlBaseTestOrders, {
           method: "POST",
           headers: {
             'Authorization': `Bearer ${token}`,
