@@ -250,7 +250,7 @@ export default function DevolucionScreen({
     {
       try
       {
-        var response = await fetch(rutas.urlBaseTestOrders, {
+        var response = await fetch(rutas.urlBaseProductionOrders, {
           method: "POST",
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -280,7 +280,7 @@ export default function DevolucionScreen({
           const name_warehouse: string = res.objects[0].warehouse.name;
           const stock_update: number = parseInt(stock_previous + quantity);
 
-          var devolucion = await fetch(rutas.urlBaseTesShowHistoryDevolutions, {
+          var devolucion = await fetch(rutas.urlBaseProductionShowHistoryDevolutions, {
             method: "POST",
             headers: {
               'Authorization': `Bearer ${token}`,
