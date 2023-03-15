@@ -1,13 +1,9 @@
 
 import React, { useState } from 'react'
-import { TextInput, Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
-import IconEye from "react-native-vector-icons/Ionicons";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Text, View, StyleSheet, ImageBackground, TouchableOpacity, Image } from "react-native"
 import * as rutas from './routes/routes';
 import { saveToken, saveIdUser, saveSupplierId, readSupplierId } from './storage/storage';
-import * as SecureStore from 'expo-secure-store';
-
-
+import { TextInput } from 'react-native-paper';
 
 export default function Login({ navigation, route }: { navigation: any, route: any })
 {
@@ -80,29 +76,26 @@ export default function Login({ navigation, route }: { navigation: any, route: a
             borderWidth: 1,
             paddingLeft: 8,
             backgroundColor: '#fff',
-            fontSize: 17
+
 
         },
         box_input: {
 
-            top: 40,
-            marginTop: 15,
-            width: '93%',
-            height: 42,
-            borderRadius: 10,
+            top: 50,
+            marginBottom:10,
+            width: 310,
+            height: 50,
+            borderRadius: 4,
             alignContent: 'center',
             justifyContent: 'center',
             alignSelf: 'center',
             borderColor: '#4D1A70',
-            borderWidth: 1,
-            paddingLeft: 8,
-            backgroundColor: '#fff',
-            fontSize: 17
-
+            borderWidth: 1.2,
+            backgroundColor: '#FFFFFF',
+         
         }
     });
 
-    ////////////////////////////
 
     const [email, setEmail] = useState({});
     const [pass, setPass] = useState("");
@@ -124,63 +117,49 @@ export default function Login({ navigation, route }: { navigation: any, route: a
 
     }
 
-    ///Funcion de login 
-
+   
     async function login()
-{
+    {
         try
         {
-            var response = await fetch(rutas.urlBaseTestLogin, {
+            var response = await fetch(rutas.urlBaseDevelomentLogin, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ "email": email, "password": pass, "white_brand_id": 1 })
-            }).then(res => res.json())
+            })
 
-                .then(resData =>
-                {
-
-                    
-                    if (resData.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
-                    {
-
-                        alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
-                    }
-
-                    if (resData.message == "Ha ingresado al sistema correctamente" && resData.isSuccess === true)
-                    {
-                        
-                        const status = "login"
-                        var DropiToken = resData.token;
-                        var idUser = resData.objects.id;
-                   
-                        if (resData.objects.roleNames[0] === "LOGISTIC") { 
-                           
-                            var supplierId = JSON.stringify(resData.objects.logistic_user_provider[0].supplier_id)
-                          
-                            saveSupplierId(supplierId)
-                        };
-
-                        saveIdUser(idUser + '');
-                        saveToken(DropiToken).then(navigation.navigate("Home"));
-
-                    }
-                });
-
-            } catch (e)
+            var res = await response.json();
+            if (res.message == "La combinación de inicio de sesión / correo electrónico no es correcta, intente nuevamente.")
             {
+
+                alert('La contraseña ó el correo electrónico no valida , intente nuevamente');
+            }
+
+            if (res.message == "Ha ingresado al sistema correctamente" && res.isSuccess === true && res.status === 200) 
+            {
+
+                var DropiToken = res.token;
+                var idUser = JSON.stringify(res.objects.id);
+                if (res.objects.roleNames[0] === "LOGISTIC")
+                {
+                    var supplierId = JSON.stringify(res.objects.logistic_user_provider[0].supplier_id)
+                    saveSupplierId(supplierId)
+                };
+
+                saveIdUser(idUser);
+                saveToken(DropiToken).then(navigation.navigate("Home"));
+
+            }
+        } catch (e)
+        {
             console.log('ERROR :', e);
             alert(e)
         }
     }
 
-
-
-
-
-    //Front
     return <View style={styles.view}>
         <ImageBackground source={require('../Img/FONDO-3.png')} style={styles.fondo}>
 
@@ -188,42 +167,45 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                 <Image style={styles.Imagenlogo} source={require('../Img/dropiSettings.png')} />
             </View>
 
+            <View style={{ flexDirection: 'column' }}>
 
-            <View style={{ width: '90%' }}>
+                <View>
 
-                <View style={styles.box_input}>
-                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su correo." onChangeText={(value) => setEmail(value)} autoComplete={'email'} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0" />
                 </View>
+                <TextInput
+                    style={styles.box_input}
+                    placeholder="Escriba aquí su correo."
+                    onChangeText={(value) => setEmail(value)}
+                    autoComplete={'email'}
+                    editable={true}
+                    placeholderTextColor="#CAC4D0"
+                    underlineColorAndroid={'white'}
+                    underlineColor={'white'}
+                    activeOutlineColor={'white'}
+                    keyboardType={'email-address'}
+                    autoCapitalize="none"
+                />
+                
 
+
+                <TextInput
+                    style={[styles.box_input]}
+                    placeholder="Escriba aquí su contraseña."
+                    onChangeText={(value) => setPass(value)}
+                    secureTextEntry={passwordVisibility}
+                    autoComplete={'password'}
+                    editable={true}
+                    autoCorrect={false}
+                    placeholderTextColor="#CAC4D0"
+                    underlineColorAndroid={'white'}
+                    underlineColor={'white'}
+                    activeOutlineColor={'white'}
+                    right={<TextInput.Icon icon={passwordVisibility ? "eye-off" : "eye"} onPress={() => setPasswordVisibility(!passwordVisibility)} />}
+                />
             </View>
 
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%', left: 12 }} >
 
-                <View style={styles.box_input}>
-                    <TextInput style={{ fontSize: 16 }} placeholder="Escriba aquí su contraseña." onChangeText={(value) => setPass(value)} secureTextEntry={passwordVisibility} autoComplete={'password'} editable={true} autoCorrect={false} placeholderTextColor="#CAC4D0" />
-                </View>
-
-                <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={{ top: 48, right: 33, width: '10%' }}
-                    onPress={() => password()}
-                >
-                    {passwordVisibility ? (
-                        <IconEye
-                            name="eye-off-outline"
-                            size={23}
-                            color="black"
-                        />
-                    ) : (
-                        <IconEye
-                            name="eye-outline"
-                            size={23}
-                            color="black"
-                        />
-                    )}
-                </TouchableOpacity>
-            </View>
             <View style={styles.btn_login}>
                 <TouchableOpacity onPress={() => login()}>
                     <Text style={styles.text_login}>
@@ -232,6 +214,5 @@ export default function Login({ navigation, route }: { navigation: any, route: a
                 </TouchableOpacity>
             </View>
         </ImageBackground>
-
     </View>
 }

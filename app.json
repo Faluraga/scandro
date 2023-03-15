@@ -4,11 +4,11 @@
     "slug": "scandro",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/img/DROPI-BLANCO.png",
     "backgroundColor": "#F38D03",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/img/DROPI-BLANCO-1.png",
       "resizeMode": "contain",
       "backgroundColor": "#F38D03"
     },
