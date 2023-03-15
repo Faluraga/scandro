@@ -1,38 +1,36 @@
 
 
+const urlNgrok = 'https://63be-179-32-16-224.ngrok.io';
+const urlDropi = 'https://test-api.dropi.co';
+const urlTest = 'https://test-api.dropi.co';
+
 ////Environments////
-export const urlBaseDevelomentLogin = "https://d162-179-32-16-224.ngrok.io/api/login";
-export const urlBaseDevelomentLogout = "https://d162-179-32-16-224.ngrok.io/api/logout";
-export const urlBaseDevelomentOrders = "https://d162-179-32-16-224.ngrok.io/api/orders/getmyorders";
-export const urlBaseDevelomentProducts = "https://d162-179-32-16-224.ngrok.io/api/products";
-export const urlBaseDevelomentDevolutions = "https://d162-179-32-16-224.ngrok.io/api/devolution/create";
-export const urlBaseDevelomentHistoryDevolutions = "https://d162-179-32-16-224.ngrok.io/api/devolution/createhistorydevolution";
-export const urlBaseDevelomentProductsAll = "https://d162-179-32-16-224.ngrok.io/api/products/update_all";
-export const urlBaseDevelomentShowHistoryDevolutions = "https://d162-179-32-16-224.ngrok.io/api/devolution/showhistorydevolution";
-
-
+export const urlBaseDevelomentLogin = `${urlNgrok}/api/login`;
+export const urlBaseDevelomentLogout = `${urlNgrok}/api/logout`;
+export const urlBaseDevelomentOrders = `${urlNgrok}/api/orders/getmyorders`;
+export const urlBaseDevelomentProducts = `${urlNgrok}/api/products`;
+export const urlBaseDevelomentDevolutions = `${urlNgrok}/api/devolution/create`;
+export const urlBaseDevelomentHistoryDevolutions = `${urlNgrok}/api/devolution/createhistorydevolution`;
+export const urlBaseDevelomentProductsAll = `${urlNgrok}/api/products/update_all`;
+export const urlBaseDevelomentShowHistoryDevolutions = `${urlNgrok}/api/devolution/showhistorydevolution`;
 
 ////test-pruebas
-
-export const urlBaseTestLogin = 'https://test-api.dropi.co/api/login';
-export const urlBaseTestLogout = 'https://test-api.dropi.co/api/logout';
-export const urlBaseTestOrders = 'https://test-api.dropi.co/api/orders/getmyorders';
-export const urlBaseTestProducts = 'https://test-api.dropi.co/api/products';
-export const urlBaseTestDevolutions = 'https://test-api.dropi.co/api/devolution/create';
-export const urlBaseTestHistoryDevolutions = 'https://test-api.dropi.co/api/devolution/createhistorydevolution';
-export const urlBaseTestProductsAll = 'https://test-api.dropi.co/api/products/update_all';
-export const urlBaseTesShowHistoryDevolutions = "https://test-api.dropi.co/api/devolution/showhistorydevolution";
-
-
-
+export const urlBaseTestLogin = `${urlTest}/api/login`;
+export const urlBaseTestLogout = `${urlTest}/api/logout`;
+export const urlBaseTestOrders = `${urlTest}/api/orders/getmyorders`;
+export const urlBaseTestProducts = `${urlTest}/api/products`;
+export const urlBaseTestDevolutions = `${urlTest}/api/devolution/create`;
+export const urlBaseTestHistoryDevolutions = `${urlTest}/api/devolution/createhistorydevolution`;
+export const urlBaseTestProductsAll = `${urlTest}/api/products/update_all`;
+export const urlBaseTesShowHistoryDevolutions = `${urlTest}/api/devolution/showhistorydevolution`;
 
 /////Production////
-export const urlBaseProductionLogin = 'https://api.dropi.co/api/login';
-export const urlBaseProductionLogout = 'https://api.dropi.co/api/logout';
-export const urlBaseProductionOrders = 'https://api.dropi.co/api/orders/getmyorders';
-export const urlBaseProductionProducts = 'https://api.dropi.co/api/products';
-export const urlBaseProductionDevolutions = 'https://api.dropi.co/api/devolution/create';
-export const urlBaseProductionHistoryDevolutions = 'https://api.dropi.co/api/devolution/createhistorydevolution';
-export const urlBaseProductionProductsAll = 'https://api.dropi.co/api/products/update_all';
-export const urlBaseProductionShowHistoryDevolutions = "https://api.dropi.co/api/devolution/showhistorydevolution";
+export const urlBaseProductionLogin = `${urlDropi}/api/login`;
+export const urlBaseProductionLogout = `${urlDropi}/api/logout`;
+export const urlBaseProductionOrders = `${urlDropi}/api/orders/getmyorders`;
+export const urlBaseProductionProducts = `${urlDropi}/api/products`;
+export const urlBaseProductionDevolutions = `${urlDropi}/api/devolution/create`;
+export const urlBaseProductionHistoryDevolutions = `${urlDropi}/api/devolution/createhistorydevolution`;
+export const urlBaseProductionProductsAll = `${urlDropi}/api/products/update_all`;
+export const urlBaseProductionShowHistoryDevolutions = `${urlDropi}/api/devolution/showhistorydevolution`;
 

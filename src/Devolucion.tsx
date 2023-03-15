@@ -250,7 +250,7 @@ export default function DevolucionScreen({
     {
       try
       {
-        var response = await fetch(rutas.urlBaseProductionOrders, {
+        var response = await fetch(rutas.urlBaseDevelomentOrders, {
           method: "POST",
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -280,7 +280,7 @@ export default function DevolucionScreen({
           const name_warehouse: string = res.objects[0].warehouse.name;
           const stock_update: number = parseInt(stock_previous + quantity);
 
-          var devolucion = await fetch(rutas.urlBaseProductionShowHistoryDevolutions, {
+          var devolucion = await fetch(rutas.urlBaseDevelomentShowHistoryDevolutions, {
             method: "POST",
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -531,23 +531,35 @@ export default function DevolucionScreen({
 
   const generateExcel = () =>
   {
+    
+
     if (arrayProducts.length >= 1)
     {
       let wb = XLSX.utils.book_new();
 
-      let items = arrayProducts.map((e: any) =>
+      let items = arrayProducts.map((e: any,i) =>
       {
+        var products_id = '';
+        var products_name = '';
+        var warehouse_id = '';
+
+        const newProduct =e['products'];
+        newProduct.forEach((element,i)=>{
+          products_id += element.id+',';
+          products_name+=element.name+',';
+          warehouse_id+=element.warehouselected+',';
+        
+        })
+   
         return [
+
           e["guide"],
           e["id_order"],
-          e["id_product"],
+          products_id.slice(0, products_id.length - 1),
           e["id_user"],
-          e["id_warehouse"],
-          e["name_product"],
-          e["name_warehouse"],
-          e["quantity"],
-          e["stock_previous"],
-          //e["stock_update"],
+          products_name.slice(0, products_name.length - 1),
+          warehouse_id.slice(0, warehouse_id.length - 1)
+ 
         ];
       });
 
@@ -557,12 +569,9 @@ export default function DevolucionScreen({
           "ID-ORDEN",
           "ID-PRODUCTO",
           "ID-USER",
-          "ID-BODEGA",
           "NOMBRE-PRODUCTO",
-          "NOMBRE-BODEGA",
-          "CANTIDAD-DEVOLUCION",
-          "STOCK-PREVIO",
-          //"STOCK-ACTUALIZADO",
+          "ID-BODEGA",
+      
         ],
         ...items,
       ]);

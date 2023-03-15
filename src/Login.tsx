@@ -122,7 +122,7 @@ export default function Login({ navigation, route }: { navigation: any, route: a
     {
         try
         {
-            var response = await fetch(rutas.urlBaseProductionLogin, {
+            var response = await fetch(rutas.urlBaseDevelomentLogin, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

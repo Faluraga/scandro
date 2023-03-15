@@ -320,7 +320,7 @@ const ModalConfirmation = () =>
     {
 
       var response = await fetch(
-        rutas.urlBaseProductionProductsAll,
+        rutas.urlBaseDevelomentProductsAll,
         {
           method: "POST",
           headers: {
@@ -373,7 +373,7 @@ const ModalConfirmation = () =>
     {
       (async () =>
       {
-        var devolucion = await fetch(rutas.urlBaseProductionDevolutions, {
+        var devolucion = await fetch(rutas.urlBaseDevelomentDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -415,7 +415,7 @@ const ModalConfirmation = () =>
     {
       (async () =>
       {
-        var response = await fetch(rutas.urlBaseProductionHistoryDevolutions, {
+        var response = await fetch(rutas.urlBaseDevelomentHistoryDevolutions, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

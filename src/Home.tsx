@@ -205,7 +205,7 @@ export default function Home ({ navigation, route }: { navigation: any; route: a
     saveSupplierId("")
     try
     { 
-      var response = await fetch(rutas.urlBaseProductionLogout, {
+      var response = await fetch(rutas.urlBaseDevelomentLogout, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
