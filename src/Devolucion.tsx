@@ -558,7 +558,8 @@ export default function DevolucionScreen({
           products_id.slice(0, products_id.length - 1),
           e["id_user"],
           products_name.slice(0, products_name.length - 1),
-          warehouse_id.slice(0, warehouse_id.length - 1)
+          warehouse_id.slice(0, warehouse_id.length - 1),
+          new Date().toLocaleDateString(),
  
         ];
       });
@@ -571,6 +572,7 @@ export default function DevolucionScreen({
           "ID-USER",
           "NOMBRE-PRODUCTO",
           "ID-BODEGA",
+          "FECHA DEVOLUCION"
       
         ],
         ...items,
